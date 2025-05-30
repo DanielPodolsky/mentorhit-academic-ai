@@ -1,0 +1,69 @@
+
+import React, { useState } from 'react';
+import Sidebar from './layout/Sidebar';
+import ChatInterface from './chat/ChatInterface';
+import PreferencesQuiz from './preferences/PreferencesQuiz';
+import UserProfile from './profile/UserProfile';
+import { useAuth } from '../context/AuthContext';
+
+type ActivePage = 'chat' | 'preferences' | 'profile';
+
+const Dashboard = () => {
+  const [activePage, setActivePage] = useState<ActivePage>('chat');
+  const { user } = useAuth();
+
+  const renderPage = () => {
+    switch (activePage) {
+      case 'chat':
+        return <ChatInterface />;
+      case 'preferences':
+        return <PreferencesQuiz />;
+      case 'profile':
+        return <UserProfile />;
+      default:
+        return <ChatInterface />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {activePage === 'chat' && 'Academic Advisor Chat'}
+                {activePage === 'preferences' && 'Preferences Setup'}
+                {activePage === 'profile' && 'Your Profile'}
+              </h1>
+              <p className="text-gray-600">
+                Welcome back, {user?.name}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="hidden md:block text-right">
+                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+                <p className="text-sm text-gray-500">Student ID: {user?.studentId}</p>
+              </div>
+              <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-medium">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-hidden">
+          {renderPage()}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
