@@ -26,29 +26,29 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-hit-light flex">
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
-      
+
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4">
+        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-hit-dark">
                 {activePage === 'chat' && 'Academic Advisor Chat'}
                 {activePage === 'preferences' && 'Preferences Setup'}
                 {activePage === 'profile' && 'Your Profile'}
               </h1>
-              <p className="text-gray-600">
+              <p className="text-hit-secondary">
                 Welcome back, {user?.name}
               </p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-                <p className="text-sm text-gray-500">Student ID: {user?.studentId}</p>
+                <p className="text-sm font-medium text-hit-dark">{user?.name}</p>
+                <p className="text-sm text-hit-secondary">Student ID: {user?.studentId}</p>
               </div>
-              <div className="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-white font-medium">
                   {user?.name?.charAt(0).toUpperCase()}
                 </span>
@@ -58,7 +58,7 @@ const Dashboard = () => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-hidden bg-hit-light">
           {renderPage()}
         </main>
       </div>

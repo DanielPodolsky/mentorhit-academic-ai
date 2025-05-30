@@ -33,30 +33,30 @@ const SuggestedPrompts: React.FC<SuggestedPromptsProps> = ({ onPromptClick }) =>
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        <h3 className="text-lg font-semibold text-hit-dark mb-2">
           Get started with these suggestions
         </h3>
-        <p className="text-gray-600">
+        <p className="text-hit-secondary">
           Click on any prompt to begin your conversation with MentorHIT
         </p>
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {prompts.map((prompt, index) => (
           <button
             key={index}
             onClick={() => onPromptClick(prompt.text)}
-            className="p-4 bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200 text-left group"
+            className="p-4 bg-white border border-gray-200 rounded-xl hover:border-hit-primary hover:shadow-md transition-all duration-200 text-left group"
           >
             <div className="flex items-start space-x-3">
-              <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
-                <prompt.icon className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-hit-light rounded-lg group-hover:bg-hit-primary/10 transition-colors">
+                <prompt.icon className="h-5 w-5 text-hit-primary" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 mb-1">
+                <p className="text-sm font-medium text-hit-dark mb-1">
                   {prompt.category}
                 </p>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-sm text-hit-secondary leading-relaxed">
                   {prompt.text}
                 </p>
               </div>

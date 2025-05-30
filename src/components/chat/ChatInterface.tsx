@@ -25,7 +25,7 @@ const ChatInterface = () => {
 
     const message = inputValue.trim();
     setInputValue('');
-    
+
     // Reset textarea height
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -43,7 +43,7 @@ const ChatInterface = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputValue(e.target.value);
-    
+
     // Auto-resize textarea
     const textarea = e.target;
     textarea.style.height = 'auto';
@@ -60,35 +60,35 @@ const ChatInterface = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-hit-light">
         {messages.map((message) => (
           <MessageBubble key={message.id} message={message} />
         ))}
-        
+
         {isTyping && (
           <div className="flex items-start space-x-3">
-            <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="h-8 w-8 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
               <span className="text-white text-sm font-medium">AI</span>
             </div>
-            <div className="bg-gray-100 rounded-2xl px-4 py-3 max-w-xs">
+            <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
               <div className="flex items-center space-x-1">
                 <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                 </div>
-                <span className="text-sm text-gray-500 ml-2">MentorHIT is thinking...</span>
+                <span className="text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
               </div>
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
       {/* Suggested Prompts */}
       {messages.length === 1 && (
-        <div className="px-6 pb-4">
+        <div className="px-6 pb-4 bg-hit-light">
           <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
         </div>
       )}
@@ -103,7 +103,7 @@ const ChatInterface = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder="Ask about courses, career advice, or academic planning..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
               style={{ minHeight: '48px', maxHeight: '120px' }}
               disabled={isTyping}
             />
@@ -111,7 +111,7 @@ const ChatInterface = () => {
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-hit-primary text-white p-3 rounded-full hover:bg-hit-primary-hover focus:ring-2 focus:ring-hit-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
           >
             {isTyping ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -120,8 +120,8 @@ const ChatInterface = () => {
             )}
           </button>
         </form>
-        
-        <p className="text-xs text-gray-500 mt-2 text-center">
+
+        <p className="text-xs text-hit-secondary mt-2 text-center">
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>

@@ -27,13 +27,13 @@ export const useChat = () => {
 
 const mockResponses = {
   'electives': "Based on your interests in data science, I recommend these HIT electives:\n\n• **Advanced Machine Learning** - Perfect for your career goals\n• **Big Data Analytics** - Highly relevant for data science roles\n• **Statistical Methods** - Essential foundation\n• **Python for Data Science** - Practical skills\n\nThese courses align well with industry demands and will strengthen your profile for data science positions. Would you like specific information about any of these courses?",
-  
+
   'career': "Excellent question! Based on your academic performance in Java and Python, here are some advanced courses I recommend:\n\n• **Advanced Software Engineering** - Build on your programming foundation\n• **System Design & Architecture** - Learn scalable system design\n• **Computer Vision** - Great combination of programming and AI\n• **Mobile App Development** - Expand your programming skills\n\nYour strong performance in programming languages shows you're ready for these challenges. Which area interests you most?",
-  
+
   'cybersecurity': "Great choice! Cybersecurity is a growing field with excellent opportunities. Here's a tailored path for you:\n\n**Core Courses:**\n• **Network Security** - Essential foundation\n• **Ethical Hacking & Penetration Testing** - Hands-on skills\n• **Cryptography** - Mathematical foundations\n• **Digital Forensics** - Investigation techniques\n\n**Industry Connections:**\nHIT has partnerships with Israeli cybersecurity companies like Check Point and CyberArk. Many graduates join these companies or start their own security firms.\n\nWould you like information about internship opportunities in cybersecurity?",
-  
+
   'grades': "I can help you analyze your academic performance and suggest improvements!\n\nTo give you the best recommendations, could you share:\n• Which courses you're finding challenging\n• Your target GPA\n• Specific subjects you want to improve in\n\nBased on your current courses (Advanced Algorithms, Machine Learning, Software Engineering), you're taking a strong technical curriculum. I can suggest study strategies and additional resources for each subject.",
-  
+
   'default': "Thank you for your question! As your AI academic advisor for HIT, I'm here to help with:\n\n• **Course recommendations** based on your interests and career goals\n• **Academic planning** for your degree path\n• **Career guidance** for tech industry roles\n• **Study strategies** for challenging courses\n• **Industry insights** and internship opportunities\n\nWhat specific area would you like guidance on today?"
 };
 
@@ -41,7 +41,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm MentorHIT, your AI academic advisor for Holon Institute of Technology. I'm here to help you with course planning, career guidance, and academic decisions.\n\nHow can I assist you today?",
+      text: "MentorHIT שלום! אני\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
       sender: 'ai',
       timestamp: new Date()
     }
@@ -64,7 +64,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     let response = mockResponses.default;
     const lowerText = text.toLowerCase();
-    
+
     if (lowerText.includes('elective') || lowerText.includes('data science')) {
       response = mockResponses.electives;
     } else if (lowerText.includes('java') || lowerText.includes('python') || lowerText.includes('grade')) {

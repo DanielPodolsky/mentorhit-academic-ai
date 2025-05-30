@@ -131,18 +131,18 @@ const PreferencesQuiz = () => {
   if (isCompleted) {
     return (
       <div className="max-w-2xl mx-auto p-8 text-center">
-        <div className="bg-green-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-          <Check className="h-8 w-8 text-green-600" />
+        <div className="bg-hit-light rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <Check className="h-8 w-8 text-hit-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-hit-dark mb-4">
           Preferences Saved Successfully!
         </h2>
-        <p className="text-gray-600 mb-8">
+        <p className="text-hit-secondary mb-8">
           Thank you for completing the preferences quiz. MentorHIT will now provide more personalized academic and career guidance based on your interests.
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover transition-colors shadow-md"
         >
           Start Chatting with MentorHIT
         </button>
@@ -156,13 +156,13 @@ const PreferencesQuiz = () => {
     <div className="max-w-4xl mx-auto p-8">
       {/* Progress Bar */}
       <div className="mb-8">
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
+        <div className="flex justify-between text-sm text-hit-secondary mb-2">
           <span>Step {currentStep + 1} of {steps.length}</span>
           <span>{Math.round(progress)}% Complete</span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+          <div
+            className="bg-hit-primary h-2 rounded-full transition-all duration-300 shadow-sm"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
@@ -170,14 +170,14 @@ const PreferencesQuiz = () => {
 
       {/* Question */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-hit-dark mb-2">
           {currentStepData.title}
         </h1>
-        <p className="text-xl text-gray-600">
+        <p className="text-xl text-hit-secondary">
           {currentStepData.question}
         </p>
         {currentStepData.type === 'multiple' && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-hit-secondary/70 mt-2">
             You can select multiple options
           </p>
         )}
@@ -191,26 +191,24 @@ const PreferencesQuiz = () => {
             <button
               key={option.value}
               onClick={() => handleAnswerChange(currentStepData.id, option.value, currentStepData.type === 'multiple')}
-              className={`w-full p-4 border-2 rounded-xl text-left transition-all ${
-                isSelected
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className={`w-full p-4 border-2 rounded-xl text-left transition-all shadow-sm ${isSelected
+                  ? 'border-hit-primary bg-hit-light'
+                  : 'border-gray-200 hover:border-hit-secondary bg-white'
+                }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 mb-1">
+                  <h3 className="font-medium text-hit-dark mb-1">
                     {option.label}
                   </h3>
                   {option.description && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-hit-secondary">
                       {option.description}
                     </p>
                   )}
                 </div>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  isSelected ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
-                }`}>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-hit-primary bg-hit-primary' : 'border-gray-300'
+                  }`}>
                   {isSelected && <Check className="h-3 w-3 text-white" />}
                 </div>
               </div>
@@ -224,7 +222,7 @@ const PreferencesQuiz = () => {
         <button
           onClick={handlePrev}
           disabled={currentStep === 0}
-          className="flex items-center space-x-2 px-4 py-2 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-900 transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 text-hit-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:text-hit-dark transition-colors"
         >
           <ChevronLeft className="h-5 w-5" />
           <span>Previous</span>
@@ -234,7 +232,7 @@ const PreferencesQuiz = () => {
           <button
             onClick={handleSubmit}
             disabled={!canProceed()}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             <span>Complete Quiz</span>
             <Check className="h-5 w-5" />
@@ -243,7 +241,7 @@ const PreferencesQuiz = () => {
           <button
             onClick={handleNext}
             disabled={!canProceed()}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             <span>Next</span>
             <ChevronRight className="h-5 w-5" />
