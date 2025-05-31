@@ -58,43 +58,65 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-hit-light">
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
+    <div className="h-full flex flex-col" >
+      {/* 
+        KEY FIX: Use flex-1 and overflow-hidden to make this area scrollable
+        The flex-1 makes it take up remaining space
+        overflow-hidden prevents it from growing the parent container
+      */}
+      <div className="flex-1 overflow-hidden" >
+        {/* 
+          KEY FIX: This is the actual scrollable area
+          h-full ensures it takes the full height of its parent
+          overflow-y-auto enables vertical scrolling
+        */}
+        <div className="h-full overflow-y-auto" >
+          <div className="p-6 space-y-6 bg-hit-light min-h-full">
+            {messages.map((message) => (
+              <MessageBubble key={message.id} message={message} />
+            ))}
 
-        {isTyping && (
-          <div className="flex items-start space-x-3">
-            <div className="h-8 w-8 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
-              <span className="text-white text-sm font-medium">AI</span>
-            </div>
-            <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
-              <div className="flex items-center space-x-1">
-                <div className="flex space-x-1">
-                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            {isTyping && (
+              <div className="flex items-start space-x-3">
+                <div className="h-8 w-8 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
+                  <span className="text-white text-sm font-medium">AI</span>
                 </div>
-                <span className="text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
+                <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
+                  <div className="flex items-center space-x-1">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
-        )}
+        </div >
+      </div >
 
-        <div ref={messagesEndRef} />
-      </div>
+      {/* 
+        Suggested Prompts - Only show when there's minimal chat history
+        This should be inside the scrollable area or positioned absolutely
+      */}
+      {
+        messages.length <= 1 && (
+          <div className="px-6 pb-4 bg-hit-light flex-shrink-0">
+            <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
+          </div>
+        )
+      }
 
-      {/* Suggested Prompts */}
-      {messages.length === 1 && (
-        <div className="px-6 pb-4 bg-hit-light">
-          <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
-        </div>
-      )}
-
-      {/* Input Area */}
-      <div className="border-t border-gray-200 bg-white p-6">
+      {/* 
+        KEY FIX: Input area stays at bottom
+        flex-shrink-0 prevents it from being compressed
+        border-t and bg-white maintain visual separation
+      */}
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
         <form onSubmit={handleSubmit} className="flex items-end space-x-4">
           <div className="flex-1 relative">
             <textarea
@@ -125,7 +147,7 @@ const ChatInterface = () => {
           Press Enter to send, Shift+Enter for new line
         </p>
       </div>
-    </div>
+    </div >
   );
 };
 

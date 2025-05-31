@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from './layout/Sidebar';
 import ChatInterface from './chat/ChatInterface';
@@ -26,12 +25,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-hit-light flex">
+    < div className="h-screen bg-hit-light flex overflow-hidden" >
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
+      {/* KEY: Use flex-1 and flex flex-col to create a column layout that takes remaining space */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header - fixed height */}
+        <header className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-hit-dark">
@@ -57,12 +57,16 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* 
+          KEY: Main Content - takes remaining space and enables overflow
+          flex-1 makes it take up remaining space after header
+          overflow-hidden prevents the main content from growing the parent
+        */}
         <main className="flex-1 overflow-hidden bg-hit-light">
           {renderPage()}
         </main>
       </div>
-    </div>
+    </div >
   );
 };
 
