@@ -10,23 +10,23 @@ const SuggestedPrompts: React.FC<SuggestedPromptsProps> = ({ onPromptClick }) =>
   const prompts = [
     {
       icon: BookOpen,
-      text: "What electives should I take for a data science career?",
-      category: "Course Planning"
+      text: "?איזה קורסי בחירה כדאי לי לקחת כדי להתמחות במדעי הנתונים",
+      category: "תכנון לימודים"
     },
     {
       icon: Code,
-      text: "Based on my grades in Java and Python, what advanced courses do you recommend?",
-      category: "Academic Progress"
+      text: "?על בסיס הציונים שלי באלגוריתמים 1 ו2, אילו קורסי בחירה מתאימים לי",
+      category: "התקדמות אישית"
     },
     {
       icon: Shield,
-      text: "What career paths match my interests in cybersecurity?",
-      category: "Career Guidance"
+      text: "?איזה מסלולי קריירה בתחום הסייבר מתאימים לתחומי העניין שלי",
+      category: "הכונה מקצועית"
     },
     {
       icon: TrendingUp,
-      text: "How can I improve my GPA and academic performance?",
-      category: "Study Tips"
+      text: "?איך אני יכול לשפר את הממוצע ואת הביצועים האקדמיים שלי",
+      category: "טיפים ללמידה"
     }
   ];
 
@@ -34,10 +34,10 @@ const SuggestedPrompts: React.FC<SuggestedPromptsProps> = ({ onPromptClick }) =>
     <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-lg font-semibold text-hit-dark mb-2">
-          Get started with these suggestions
+          התחילו לדוגמה עם ההצעות האלו
         </h3>
         <p className="text-hit-secondary">
-          Click on any prompt to begin your conversation with MentorHIT
+          :) לחצו על כל הצעה כדי להתחיל את השיחה שלך איתנו
         </p>
       </div>
 
@@ -52,7 +52,7 @@ const SuggestedPrompts: React.FC<SuggestedPromptsProps> = ({ onPromptClick }) =>
               <div className="p-2 bg-hit-light rounded-lg group-hover:bg-hit-primary/10 transition-colors">
                 <prompt.icon className="h-5 w-5 text-hit-primary" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 text-right">
                 <p className="text-sm font-medium text-hit-dark mb-1">
                   {prompt.category}
                 </p>

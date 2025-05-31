@@ -124,8 +124,8 @@ const ChatInterface = () => {
               value={inputValue}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
-              placeholder="Ask about courses, career advice, or academic planning..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
+              placeholder="...שאלו על קורסים, ייעוץ קריירה או תכנון אקדמי"
+              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors text-right"
               style={{ minHeight: '48px', maxHeight: '120px' }}
               disabled={isTyping}
             />

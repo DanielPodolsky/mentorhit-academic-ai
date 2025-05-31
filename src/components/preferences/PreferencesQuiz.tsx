@@ -20,70 +20,67 @@ const PreferencesQuiz = () => {
   const steps: QuizStep[] = [
     {
       id: 'interests',
-      title: 'Academic Interests',
-      question: 'Which fields of study interest you most?',
+      title: 'תחום התמחות',
+      question: '?אילו תחומים הכי מעניינים אתכם',
       type: 'multiple',
       options: [
-        { value: 'ai', label: 'Artificial Intelligence & Machine Learning' },
-        { value: 'cybersecurity', label: 'Cybersecurity & Information Security' },
-        { value: 'software', label: 'Software Engineering & Development' },
-        { value: 'data', label: 'Data Science & Analytics' },
-        { value: 'networks', label: 'Computer Networks & Systems' },
-        { value: 'mobile', label: 'Mobile App Development' }
+        { value: 'ai_data', label: 'בינה מלאכותית ומדעי הנתונים', description: 'למשל: למידה עמוקה, ראייה ממוחשבת, כריית נתונים' },
+        { value: 'cybersecurity_web', label: 'תקשורת ואינטרנט', description: 'למשל: אבטחת מחשבים, היבטים מעשיים באבטחת סייבר, פיתוח צד לקוח, פיתוח צד שרת' },
+        { value: 'software_eng', label: 'הנדסת תוכנה', description: 'למשל: בדיקות תוכנה, תבנית עיצוב תוכנה, תכנות מונחה עצמים בסביבות דוט נט וסי-שארפ' },
+        { value: 'system_eng', label: 'הנדסת מחשבים', description: 'למשל: מערכות זמן אמת, רובוטיקה למדעי המחשב, פיתוח תוכנה עבור רכב אוטונומי אינטליגנטי, אלגוריתמים לניווט ושיערוך מקום' },
+        { value: 'general', label: 'קורסי בחירה כלליים', description: 'למשל: תכנות לוגי, מבוא למערכות מידע גאוגרפי, תכנות תחרותי, גרפיקה ממוחשבת' }
       ]
     },
     {
-      id: 'career',
-      title: 'Career Goals',
-      question: 'What is your primary career goal after graduation?',
+      id: 'course_purpose',
+      title: 'מטרת קורסי הבחירה',
+      question: '?מה חשוב לכם הכי הרבה בקורסי הבחירה',
+      type: 'multiple',
+      options: [
+        { value: 'career_focused', label: 'רלוונטיות לקריירה', description: 'קורסים שיעזרו לי למצוא עבודה בתחום שאני רוצה' },
+        { value: 'skill_building', label: 'פיתוח כישורים טכניים', description: 'ללמוד טכנולוגיות וכלים חדשים' },
+        { value: 'academic_excellence', label: 'הישגים אקדמיים', description: 'קורסים שאני יכול להצליח בהם ולהעלות ממוצע' },
+        { value: 'interest_driven', label: 'עניין אישי', description: 'קורסים שמעניינים אותי גם אם הם לא קשורים לקריירה' },
+        { value: 'networking', label: 'קשרים ועבודה קבוצתית', description: 'קורסים עם פרויקטים קבוצתיים וחיבור לסטודנטים אחרים' }
+      ]
+    },
+    {
+      id: 'learning_style',
+      title: 'סגנון למידה מועדף',
+      question: '?איך אתם הכי אוהבים ללמוד חומר חדש',
       type: 'single',
       options: [
-        { value: 'startup', label: 'Start my own tech company', description: 'Entrepreneurship and innovation' },
-        { value: 'bigtech', label: 'Work at a major tech company', description: 'Google, Microsoft, Meta, etc.' },
-        { value: 'local', label: 'Join an Israeli tech company', description: 'Check Point, Wix, JFrog, etc.' },
-        { value: 'research', label: 'Pursue graduate studies/research', description: 'Masters or PhD programs' },
-        { value: 'consulting', label: 'Technology consulting', description: 'Help businesses with tech solutions' }
+        { value: 'hands_on', label: 'למידה מעשית ופרויקטים', description: 'אוהב ללמוד תוך כדי עשייה ובניית דברים' },
+        { value: 'theory_first', label: 'הבנה תיאורטית מעמיקה', description: 'מעדיף להבין את העקרונות לפני המעבר לפרקטיקה' },
+        { value: 'collaborative', label: 'למידה חברתית ושיתופית', description: 'אוהב לעבוד בקבוצות ולשתף רעיונות' },
+        { value: 'visual_learner', label: 'למידה חזותית ואינטראקטיבית', description: 'מתחבר לדיאגרמות, סרטונים ודוגמאות חזותיות' },
+        { value: 'structured', label: 'למידה מובנית ושיטתית', description: 'אוהב תכנית לימודים ברורה ומתקדמת בצורה הדרגתית' }
       ]
     },
     {
-      id: 'learning',
-      title: 'Learning Style',
-      question: 'How do you prefer to learn new concepts?',
+      id: 'future_goals',
+      title: 'מטרות לעתיד',
+      question: 'איך אתה רואה את עצמך בעוד 5 שנים?',
+      type: 'multiple',
+      options: [
+        { value: 'tech_leader', label: 'מוביל טכנולוגי', description: 'מוביל צוותי פיתוח ומשפיע על החלטות טכנולוגיות' },
+        { value: 'entrepreneur', label: 'יזם וחדשן', description: 'מקים חברה או פותח מוצרים חדשניים' },
+        { value: 'specialist', label: 'מומחה בתחום מסוים', description: 'הופך למומחה מוכר בתחום ספציפי' },
+        { value: 'global_impact', label: 'יוצר השפעה חברתית', description: 'עובד על פרויקטים שמשפיעים חיובית על החברה' },
+        { value: 'work_life_balance', label: 'איזון עבודה וחיים', description: 'משלב בין קריירה מספקת לחיים אישיים מלאים' },
+      ]
+    },
+    {
+      id: 'work_environment',
+      title: 'סביבת עבודה מועדפת',
+      question: 'באיזה סוג של סביבת עבודה אתה מרגיש הכי טוב?',
       type: 'single',
       options: [
-        { value: 'hands-on', label: 'Hands-on projects and coding', description: 'Learning by building and experimenting' },
-        { value: 'theory', label: 'Theoretical understanding first', description: 'Math, algorithms, and principles' },
-        { value: 'group', label: 'Group work and collaboration', description: 'Team projects and peer learning' },
-        { value: 'visual', label: 'Visual aids and demonstrations', description: 'Diagrams, videos, and examples' },
-        { value: 'mixed', label: 'Combination of methods', description: 'Different approaches for different topics' }
-      ]
-    },
-    {
-      id: 'industry',
-      title: 'Industry Preferences',
-      question: 'Which industries would you like to work in?',
-      type: 'multiple',
-      options: [
-        { value: 'fintech', label: 'Financial Technology' },
-        { value: 'healthcare', label: 'Healthcare & MedTech' },
-        { value: 'gaming', label: 'Gaming & Entertainment' },
-        { value: 'security', label: 'Defense & Security' },
-        { value: 'ecommerce', label: 'E-commerce & Retail' },
-        { value: 'education', label: 'Education Technology' }
-      ]
-    },
-    {
-      id: 'skills',
-      title: 'Skill Development',
-      question: 'Which skills would you most like to develop?',
-      type: 'multiple',
-      options: [
-        { value: 'programming', label: 'Advanced Programming Languages' },
-        { value: 'algorithms', label: 'Algorithms & Data Structures' },
-        { value: 'systems', label: 'System Design & Architecture' },
-        { value: 'leadership', label: 'Leadership & Project Management' },
-        { value: 'communication', label: 'Technical Communication' },
-        { value: 'business', label: 'Business & Entrepreneurship' }
+        { value: 'startup', label: 'סטארט-אפ דינמי', description: 'סביבה מהירה, חדשנית ומאתגרת' },
+        { value: 'remote_flexible', label: 'עבודה מרחוק וגמישה', description: 'חופש גיאוגרפי וגמישות בשעות העבודה' },
+        { value: 'research_academic', label: 'מחקר ואקדמיה', description: 'סביבה אקדמית עם דגש על מחקר וחדשנות' },
+        { value: 'freelance_consulting', label: 'עצמאי וייעוץ', description: 'עבודה עצמאית עם לקוחות מגוונים' },
+        { value: 'social_impact', label: 'ארגונים חברתיים', description: 'ארגונים שמטרתם יצירת השפעה חברתית חיובית' }
       ]
     }
   ];
@@ -135,16 +132,16 @@ const PreferencesQuiz = () => {
           <Check className="h-8 w-8 text-hit-primary" />
         </div>
         <h2 className="text-2xl font-bold text-hit-dark mb-4">
-          Preferences Saved Successfully!
+          !ההעדפות נשמרו בהצלחה
         </h2>
         <p className="text-hit-secondary mb-8">
-          Thank you for completing the preferences quiz. MentorHIT will now provide more personalized academic and career guidance based on your interests.
+          תודה שהשלמתם את השאלון. מנטורהיט יוכל כעת לספק לך הכוונה אקדמית ומקצועית מותאמת אישית על בסיס תחומי העניין שלך.
         </p>
         <button
           onClick={() => window.location.reload()}
           className="bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover transition-colors shadow-md"
         >
-          Start Chatting with MentorHIT
+          :) התחילו שיחה איתנו
         </button>
       </div>
     );
@@ -170,15 +167,15 @@ const PreferencesQuiz = () => {
 
       {/* Question */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-hit-dark mb-2">
+        <h1 className="text-3xl font-bold text-hit-dark mb-2 text-right">
           {currentStepData.title}
         </h1>
-        <p className="text-xl text-hit-secondary">
+        <p className="text-xl text-hit-secondary text-right">
           {currentStepData.question}
         </p>
         {currentStepData.type === 'multiple' && (
-          <p className="text-sm text-hit-secondary/70 mt-2">
-            You can select multiple options
+          <p className="text-sm text-hit-secondary/70 mt-2 text-right">
+            אתם יכולים לבחור יותר מתשובה אחת
           </p>
         )}
       </div>
@@ -187,17 +184,18 @@ const PreferencesQuiz = () => {
       <div className="space-y-3 mb-8">
         {currentStepData.options.map((option) => {
           const isSelected = (answers[currentStepData.id] || []).includes(option.value);
+
           return (
             <button
               key={option.value}
               onClick={() => handleAnswerChange(currentStepData.id, option.value, currentStepData.type === 'multiple')}
-              className={`w-full p-4 border-2 rounded-xl text-left transition-all shadow-sm ${isSelected
-                  ? 'border-hit-primary bg-hit-light'
-                  : 'border-gray-200 hover:border-hit-secondary bg-white'
+              className={`w-full p-4 border-2 rounded-xl text-right transition-all shadow-sm ${isSelected
+                ? 'border-hit-primary bg-hit-light'
+                : 'border-gray-200 hover:border-hit-secondary bg-white'
                 }`}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
+              <div className="flex items-start justify-between flex-row-reverse">
+                <div className="flex-1 text-right">
                   <h3 className="font-medium text-hit-dark mb-1">
                     {option.label}
                   </h3>
@@ -207,7 +205,7 @@ const PreferencesQuiz = () => {
                     </p>
                   )}
                 </div>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-hit-primary bg-hit-primary' : 'border-gray-300'
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ml-3 ${isSelected ? 'border-hit-primary bg-hit-primary' : 'border-gray-300'
                   }`}>
                   {isSelected && <Check className="h-3 w-3 text-white" />}
                 </div>
