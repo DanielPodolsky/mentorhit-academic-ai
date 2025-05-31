@@ -18,17 +18,6 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-// Fallback responses for when AWS API fails or returns unexpected data
-const fallbackResponses = {
-  'electives': "Based on your interests in data science, I recommend these HIT electives:\n\n• **Advanced Machine Learning** - Perfect for your career goals\n• **Big Data Analytics** - Highly relevant for data science roles\n• **Statistical Methods** - Essential foundation\n• **Python for Data Science** - Practical skills\n\nThese courses align well with industry demands and will strengthen your profile for data science positions. Would you like specific information about any of these courses?",
-
-  'career': "Excellent question! Based on your academic performance in Java and Python, here are some advanced courses I recommend:\n\n• **Advanced Software Engineering** - Build on your programming foundation\n• **System Design & Architecture** - Learn scalable system design\n• **Computer Vision** - Great combination of programming and AI\n• **Mobile App Development** - Expand your programming skills\n\nYour strong performance in programming languages shows you're ready for these challenges. Which area interests you most?",
-
-  'cybersecurity': "Great choice! Cybersecurity is a growing field with excellent opportunities. Here's a tailored path for you:\n\n**Core Courses:**\n• **Network Security** - Essential foundation\n• **Ethical Hacking & Penetration Testing** - Hands-on skills\n• **Cryptography** - Mathematical foundations\n• **Digital Forensics** - Investigation techniques\n\n**Industry Connections:**\nHIT has partnerships with Israeli cybersecurity companies like Check Point and CyberArk. Many graduates join these companies or start their own security firms.\n\nWould you like information about internship opportunities in cybersecurity?",
-
-  'default': "Thank you for your question! As your AI academic advisor for HIT, I'm here to help with:\n\n• **Course recommendations** based on your interests and career goals\n• **Academic planning** for your degree path\n• **Career guidance** for tech industry roles\n• **Study strategies** for challenging courses\n• **Industry insights** and internship opportunities\n\nWhat specific area would you like guidance on today?"
-};
-
 // ChatProvider component - must be defined before useChat hook
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
@@ -42,6 +31,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+
 
   const sendMessage = async (text: string) => {
     const userMessage: Message = {
@@ -61,26 +51,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         userId: user?.id || 'anonymous'
       });
 
-      console.log('AWS API Response:', response);
 
       // For now, since your Lambda returns a simple echo response,
       // we'll use fallback logic until you implement AI responses in Lambda
-      let aiResponseText = response.message || fallbackResponses.default;
-
-      // If the AWS response is just the echo, use intelligent fallback
-      if (aiResponseText === 'MentorHIT backend is working!' || !aiResponseText) {
-        const lowerText = text.toLowerCase();
-
-        if (lowerText.includes('elective') || lowerText.includes('data science')) {
-          aiResponseText = fallbackResponses.electives;
-        } else if (lowerText.includes('java') || lowerText.includes('python') || lowerText.includes('programming')) {
-          aiResponseText = fallbackResponses.career;
-        } else if (lowerText.includes('cyber') || lowerText.includes('security')) {
-          aiResponseText = fallbackResponses.cybersecurity;
-        } else {
-          aiResponseText = fallbackResponses.default;
-        }
-      }
+      let aiResponseText = response.message;
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),

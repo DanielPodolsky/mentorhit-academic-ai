@@ -78,8 +78,8 @@ const ChatInterface = () => {
 
             {isTyping && (
               <div className="flex items-start space-x-3">
-                <div className="h-8 w-8 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
-                  <span className="text-white text-sm font-medium">AI</span>
+                <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
+                  <img src="logo-white.png" className="h-8 w-8 text-white text-sm font-medium" alt="" />
                 </div>
                 <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-1">
