@@ -1,5 +1,6 @@
-
 import React, { createContext, useContext, useState } from 'react';
+import { chatAPI } from '@/lib/api';
+import { useAuth } from './AuthContext';
 
 interface Message {
   id: string;
@@ -17,31 +18,25 @@ interface ChatContextType {
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
-export const useChat = () => {
-  const context = useContext(ChatContext);
-  if (!context) {
-    throw new Error('useChat must be used within ChatProvider');
-  }
-  return context;
-};
-
-const mockResponses = {
+// Fallback responses for when AWS API fails or returns unexpected data
+const fallbackResponses = {
   'electives': "Based on your interests in data science, I recommend these HIT electives:\n\n• **Advanced Machine Learning** - Perfect for your career goals\n• **Big Data Analytics** - Highly relevant for data science roles\n• **Statistical Methods** - Essential foundation\n• **Python for Data Science** - Practical skills\n\nThese courses align well with industry demands and will strengthen your profile for data science positions. Would you like specific information about any of these courses?",
 
   'career': "Excellent question! Based on your academic performance in Java and Python, here are some advanced courses I recommend:\n\n• **Advanced Software Engineering** - Build on your programming foundation\n• **System Design & Architecture** - Learn scalable system design\n• **Computer Vision** - Great combination of programming and AI\n• **Mobile App Development** - Expand your programming skills\n\nYour strong performance in programming languages shows you're ready for these challenges. Which area interests you most?",
 
   'cybersecurity': "Great choice! Cybersecurity is a growing field with excellent opportunities. Here's a tailored path for you:\n\n**Core Courses:**\n• **Network Security** - Essential foundation\n• **Ethical Hacking & Penetration Testing** - Hands-on skills\n• **Cryptography** - Mathematical foundations\n• **Digital Forensics** - Investigation techniques\n\n**Industry Connections:**\nHIT has partnerships with Israeli cybersecurity companies like Check Point and CyberArk. Many graduates join these companies or start their own security firms.\n\nWould you like information about internship opportunities in cybersecurity?",
 
-  'grades': "I can help you analyze your academic performance and suggest improvements!\n\nTo give you the best recommendations, could you share:\n• Which courses you're finding challenging\n• Your target GPA\n• Specific subjects you want to improve in\n\nBased on your current courses (Advanced Algorithms, Machine Learning, Software Engineering), you're taking a strong technical curriculum. I can suggest study strategies and additional resources for each subject.",
-
   'default': "Thank you for your question! As your AI academic advisor for HIT, I'm here to help with:\n\n• **Course recommendations** based on your interests and career goals\n• **Academic planning** for your degree path\n• **Career guidance** for tech industry roles\n• **Study strategies** for challenging courses\n• **Industry insights** and internship opportunities\n\nWhat specific area would you like guidance on today?"
 };
 
+// ChatProvider component - must be defined before useChat hook
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "MentorHIT שלום! אני\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
+      text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
       sender: 'ai',
       timestamp: new Date()
     }
@@ -59,47 +54,93 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 1000));
+    try {
+      // Call real AWS API
+      const response = await chatAPI.sendMessage({
+        message: text,
+        userId: user?.id || 'anonymous'
+      });
 
-    let response = mockResponses.default;
-    const lowerText = text.toLowerCase();
+      console.log('AWS API Response:', response);
 
-    if (lowerText.includes('elective') || lowerText.includes('data science')) {
-      response = mockResponses.electives;
-    } else if (lowerText.includes('java') || lowerText.includes('python') || lowerText.includes('grade')) {
-      response = mockResponses.career;
-    } else if (lowerText.includes('cyber') || lowerText.includes('security')) {
-      response = mockResponses.cybersecurity;
-    } else if (lowerText.includes('grade') || lowerText.includes('gpa') || lowerText.includes('improve')) {
-      response = mockResponses.grades;
+      // For now, since your Lambda returns a simple echo response,
+      // we'll use fallback logic until you implement AI responses in Lambda
+      let aiResponseText = response.message || fallbackResponses.default;
+
+      // If the AWS response is just the echo, use intelligent fallback
+      if (aiResponseText === 'MentorHIT backend is working!' || !aiResponseText) {
+        const lowerText = text.toLowerCase();
+
+        if (lowerText.includes('elective') || lowerText.includes('data science')) {
+          aiResponseText = fallbackResponses.electives;
+        } else if (lowerText.includes('java') || lowerText.includes('python') || lowerText.includes('programming')) {
+          aiResponseText = fallbackResponses.career;
+        } else if (lowerText.includes('cyber') || lowerText.includes('security')) {
+          aiResponseText = fallbackResponses.cybersecurity;
+        } else {
+          aiResponseText = fallbackResponses.default;
+        }
+      }
+
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: aiResponseText,
+        sender: 'ai',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+
+    } catch (error) {
+      console.error('Failed to send message to AWS:', error);
+
+      // Fallback to local response if AWS fails
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm sorry, I'm having trouble connecting to my backend services right now. Please try again in a moment, or contact support if the issue persists.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } finally {
+      setIsTyping(false);
     }
-
-    const aiMessage: Message = {
-      id: (Date.now() + 1).toString(),
-      text: response,
-      sender: 'ai',
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, aiMessage]);
-    setIsTyping(false);
   };
 
   const clearChat = () => {
     setMessages([
       {
         id: '1',
-        text: "Hello! I'm MentorHIT, your AI academic advisor for Holon Institute of Technology. I'm here to help you with course planning, career guidance, and academic decisions.\n\nHow can I assist you today?",
+        text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
         sender: 'ai',
         timestamp: new Date()
       }
     ]);
   };
 
+  const contextValue: ChatContextType = {
+    messages,
+    isTyping,
+    sendMessage,
+    clearChat
+  };
+
   return (
-    <ChatContext.Provider value={{ messages, isTyping, sendMessage, clearChat }}>
+    <ChatContext.Provider value={contextValue}>
       {children}
     </ChatContext.Provider>
   );
 };
+
+// Custom hook - must be exported after the component
+export const useChat = () => {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error('useChat must be used within ChatProvider');
+  }
+  return context;
+};
+
+// Export types for other components to use
+export type { Message, ChatContextType };
