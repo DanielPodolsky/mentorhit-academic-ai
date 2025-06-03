@@ -1,4 +1,3 @@
-
 export interface ChatRequest {
     message: string;
     userId: string;
@@ -10,41 +9,73 @@ export interface ChatResponse {
     receivedMessage: string;
     userId: string;
     timestamp: string;
+    // Additional fields from your Lambda response
+    aiPlanUsed?: {
+        datasets: string[];
+        useKnowledgeBase: boolean;
+        searchCourses: boolean;
+        specificQueries?: any[];
+    };
+    dataSourcesQueried?: string[];
+    demoMode?: boolean;
+    knowledgeBaseUsed?: boolean;
+    modelUsed?: string;
 }
 
 export interface APIError {
+    success: false;
     error: string;
+    message: string;
+    timestamp: string;
     details?: string;
 }
 
 export const chatAPI = {
     sendMessage: async (request: ChatRequest): Promise<ChatResponse> => {
         try {
-            console.log('Sending request to AWS:', request);
+            console.log('🚀 Sending request to MentorHIT AWS Lambda:', request);
+
+            // Get the API base URL from environment variables
             const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-            const response = await fetch(`${API_BASE_URL}/chat`, {
+            if (!API_BASE_URL) {
+                console.warn('⚠️ VITE_API_BASE_URL not set, using fallback URL');
+            }
+
+            // Use environment variable or fallback URL
+            const apiUrl = API_BASE_URL || 'https://your-api-gateway-url.amazonaws.com/prod';
+
+            const response = await fetch(`${apiUrl}/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify(request),
             });
 
-            console.log('AWS Response status:', response.status);
+            console.log('📡 AWS Lambda Response status:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('AWS API Error:', errorText);
+                console.error('❌ AWS API Error:', errorText);
                 throw new Error(`API Error: ${response.status} - ${errorText}`);
             }
 
             const data = await response.json();
-            console.log('AWS Response data:', data);
+            console.log('✅ AWS Lambda Response data:', data);
 
-            return data;
+            // Validate response structure
+            if (!data.success && data.error) {
+                throw new Error(data.message || data.error);
+            }
+
+            return data as ChatResponse;
+
         } catch (error) {
-            console.error('Chat API Error:', error);
+            console.error('❌ Chat API Error:', error);
+
+            // Re-throw the error to be handled by the calling component
             throw error;
         }
     },

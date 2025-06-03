@@ -1,13 +1,12 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Database, Brain, Zap } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import MessageBubble from './MessageBubble';
 import SuggestedPrompts from './SuggestedPrompts';
 
 const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
-  const { messages, isTyping, sendMessage } = useChat();
+  const { messages, isTyping, sendMessage, lastError } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,29 +56,99 @@ const ChatInterface = () => {
     }
   };
 
+  // Get the latest AI message metadata for display
+  const latestAiMessage = messages
+    .filter(m => m.sender === 'ai' && m.metadata)
+    .slice(-1)[0];
+
   return (
-    <div className="h-full flex flex-col" >
-      {/* 
-        KEY FIX: Use flex-1 and overflow-hidden to make this area scrollable
-        The flex-1 makes it take up remaining space
-        overflow-hidden prevents it from growing the parent container
-      */}
-      <div className="flex-1 overflow-hidden" >
-        {/* 
-          KEY FIX: This is the actual scrollable area
-          h-full ensures it takes the full height of its parent
-          overflow-y-auto enables vertical scrolling
-        */}
-        <div className="h-full overflow-y-auto" >
+    <div className="h-full flex flex-col">
+      {/* Demo Status Banner (only show if we have metadata from latest AI response) */}
+      {latestAiMessage?.metadata && (
+        <div className="flex-shrink-0 bg-hit-gradient-dark text-white px-6 py-3">
+          <div className="flex items-center justify-between max-w-4xl mx-auto">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Brain className="h-4 w-4" />
+                <span className="text-sm font-medium">
+                  {latestAiMessage.metadata.modelUsed || 'AWS Bedrock AI'}
+                </span>
+              </div>
+
+              {latestAiMessage.metadata.knowledgeBaseUsed && (
+                <div className="flex items-center space-x-2">
+                  <Database className="h-4 w-4" />
+                  <span className="text-sm">Knowledge Base</span>
+                </div>
+              )}
+
+              {latestAiMessage.metadata.demoMode && (
+                <div className="flex items-center space-x-2">
+                  <Zap className="h-4 w-4" />
+                  <span className="text-sm">Demo Mode</span>
+                </div>
+              )}
+            </div>
+
+            {latestAiMessage.metadata.dataSourcesQueried && (
+              <div className="text-xs opacity-90">
+                Data Sources: {latestAiMessage.metadata.dataSourcesQueried.length}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Error Banner */}
+      {lastError && (
+        <div className="flex-shrink-0 bg-red-50 border-l-4 border-red-400 p-4">
+          <div className="flex">
+            <div className="ml-3">
+              <p className="text-sm text-red-700">
+                <strong>Connection Error:</strong> {lastError}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Chat Messages Area */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto">
           <div className="p-6 space-y-6 bg-hit-light min-h-full">
             {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
+              <div key={message.id}>
+                <MessageBubble message={message} />
+
+                {/* Show metadata for AI messages in demo mode */}
+                {message.sender === 'ai' && message.metadata && message.metadata.demoMode && (
+                  <div className="mt-2 ml-14 text-xs text-hit-secondary bg-white/50 rounded-lg p-2 border border-hit-light">
+                    <div className="grid grid-cols-2 gap-2">
+                      {message.metadata.dataSourcesQueried && (
+                        <div>
+                          <strong>Data Sources:</strong> {message.metadata.dataSourcesQueried.join(', ')}
+                        </div>
+                      )}
+                      {message.metadata.knowledgeBaseUsed && (
+                        <div>
+                          <strong>Knowledge Base:</strong> Active
+                        </div>
+                      )}
+                      {message.metadata.aiPlanUsed && (
+                        <div className="col-span-2">
+                          <strong>AI Strategy:</strong> {message.metadata.aiPlanUsed.datasets?.join(', ') || 'Multi-source analysis'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
 
             {isTyping && (
               <div className="flex items-start space-x-3">
                 <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
-                  <img src="logo-white.png" className="h-8 w-8 text-white text-sm font-medium" alt="" />
+                  <img src="/logo-white.png" className="h-8 w-8 text-white text-sm font-medium" alt="" />
                 </div>
                 <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-1">
@@ -88,7 +157,16 @@ const ChatInterface = () => {
                       <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                       <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
+                    <span className="text-sm text-hit-secondary ml-2">
+                      {latestAiMessage?.metadata?.knowledgeBaseUsed
+                        ? 'מחפש בבסיס הידע...'
+                        : 'MentorHIT חושב...'}
+                    </span>
+                  </div>
+
+                  {/* Show additional processing info during typing */}
+                  <div className="mt-1 text-xs text-hit-secondary/70">
+                    🧠 Amazon Bedrock • 📚 HIT Knowledge Base
                   </div>
                 </div>
               </div>
@@ -96,26 +174,17 @@ const ChatInterface = () => {
 
             <div ref={messagesEndRef} />
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
 
-      {/* 
-        Suggested Prompts - Only show when there's minimal chat history
-        This should be inside the scrollable area or positioned absolutely
-      */}
-      {
-        messages.length <= 1 && (
-          <div className="px-6 pb-4 bg-hit-light flex-shrink-0">
-            <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
-          </div>
-        )
-      }
+      {/* Suggested Prompts - Only show when there's minimal chat history */}
+      {messages.length <= 1 && (
+        <div className="px-6 pb-4 bg-hit-light flex-shrink-0">
+          <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
+        </div>
+      )}
 
-      {/* 
-        KEY FIX: Input area stays at bottom
-        flex-shrink-0 prevents it from being compressed
-        border-t and bg-white maintain visual separation
-      */}
+      {/* Input Area */}
       <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
         <form onSubmit={handleSubmit} className="flex items-end space-x-4">
           <div className="flex-1 relative">
@@ -143,11 +212,19 @@ const ChatInterface = () => {
           </button>
         </form>
 
-        <p className="text-xs text-hit-secondary mt-2 text-center">
-          Press Enter to send, Shift+Enter for new line
-        </p>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-hit-secondary">
+            Press Enter to send, Shift+Enter for new line
+          </p>
+
+          {/* API Status Indicator */}
+          <div className="flex items-center space-x-2 text-xs text-hit-secondary">
+            <div className={`w-2 h-2 rounded-full ${lastError ? 'bg-red-400' : 'bg-green-400'}`}></div>
+            <span>{lastError ? 'API Offline' : 'AWS Connected'}</span>
+          </div>
+        </div>
       </div>
-    </div >
+    </div>
   );
 };
 

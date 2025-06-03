@@ -1,29 +1,22 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 const LoginForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    name: ''
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const { login, signup, loading } = useAuth();
+  const { login, loading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      if (isLogin) {
-        await login(formData.email, formData.password);
-      } else {
-        await signup(formData.email, formData.password, formData.name);
-      }
+      await login(formData.email, formData.password);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     }
@@ -52,53 +45,14 @@ const LoginForm = () => {
 
         {/* Form */}
         <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-          <div className="mb-6">
-            <div className="flex bg-hit-light rounded-lg p-1">
-              <button
-                type="button"
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${isLogin
-                    ? 'bg-white text-hit-primary shadow-sm'
-                    : 'text-hit-secondary hover:text-hit-dark'
-                  }`}
-              >
-                Login
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${!isLogin
-                    ? 'bg-white text-hit-primary shadow-sm'
-                    : 'text-hit-secondary hover:text-hit-dark'
-                  }`}
-              >
-                Sign Up
-              </button>
-            </div>
+          <div className="mb-6 text-center">
+            <h3 className="text-xl font-semibold text-hit-dark">Sign In</h3>
+            <p className="text-sm text-hit-secondary mt-1">
+              Access your academic advisor
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {!isLogin && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-hit-dark mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-hit-secondary h-5 w-5" />
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required={!isLogin}
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
-                    placeholder="Enter your full name"
-                  />
-                </div>
-              </div>
-            )}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-hit-dark mb-2">
                 HIT Email Address
@@ -159,10 +113,10 @@ const LoginForm = () => {
               {loading ? (
                 <div className="flex items-center justify-center">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  {isLogin ? 'Signing in...' : 'Creating account...'}
+                  Signing in...
                 </div>
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                'Sign In'
               )}
             </button>
           </form>

@@ -7,6 +7,14 @@ interface Message {
   text: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  // Additional metadata from Lambda response
+  metadata?: {
+    aiPlanUsed?: any;
+    dataSourcesQueried?: string[];
+    knowledgeBaseUsed?: boolean;
+    modelUsed?: string;
+    demoMode?: boolean;
+  };
 }
 
 interface ChatContextType {
@@ -14,6 +22,7 @@ interface ChatContextType {
   isTyping: boolean;
   sendMessage: (text: string) => Promise<void>;
   clearChat: () => void;
+  lastError: string | null;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -25,13 +34,17 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
+      text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
       sender: 'ai',
-      timestamp: new Date()
+      timestamp: new Date(),
+      metadata: {
+        demoMode: true,
+        modelUsed: 'Claude 3.5 Sonnet + Amazon Titan + Knowledge Base'
+      }
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
-
+  const [lastError, setLastError] = useState<string | null>(null);
 
   const sendMessage = async (text: string) => {
     const userMessage: Message = {
@@ -43,40 +56,73 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setMessages(prev => [...prev, userMessage]);
     setIsTyping(true);
+    setLastError(null);
 
     try {
-      // Call real AWS API
+      console.log('🤖 Sending message to MentorHIT Lambda...');
+
+      // Call the AWS Lambda function
       const response = await chatAPI.sendMessage({
         message: text,
         userId: user?.id || 'anonymous'
       });
 
+      console.log('✅ Received response from Lambda:', response);
 
-      // For now, since your Lambda returns a simple echo response,
-      // we'll use fallback logic until you implement AI responses in Lambda
-      let aiResponseText = response.message;
-
+      // Create AI response message with metadata
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: aiResponseText,
+        text: response.message,
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(response.timestamp),
+        metadata: {
+          aiPlanUsed: response.aiPlanUsed,
+          dataSourcesQueried: response.dataSourcesQueried,
+          knowledgeBaseUsed: response.knowledgeBaseUsed,
+          modelUsed: response.modelUsed,
+          demoMode: response.demoMode
+        }
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // Log impressive demo details for debugging
+      if (response.demoMode) {
+        console.log('🎯 Demo mode response details:', {
+          dataSources: response.dataSourcesQueried,
+          knowledgeBase: response.knowledgeBaseUsed,
+          model: response.modelUsed,
+          aiPlan: response.aiPlanUsed
+        });
+      }
 
     } catch (error) {
-      console.error('Failed to send message to AWS:', error);
+      console.error('❌ Failed to send message to AWS Lambda:', error);
+      setLastError(error instanceof Error ? error.message : 'Unknown error occurred');
 
-      // Fallback to local response if AWS fails
-      const aiMessage: Message = {
+      // Create error response message
+      const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I'm having trouble connecting to my backend services right now. Please try again in a moment, or contact support if the issue persists.",
+        text: `מתנצל, אבל נתקלתי בבעיה בחיבור לשרתי AWS. 
+        
+🔧 **פרטי השגיאה:**
+${error instanceof Error ? error.message : 'שגיאה לא ידועה'}
+
+🔄 **מה ניתן לעשות:**
+• בדוק את חיבור האינטרנט
+• נסה שוב בעוד רגע
+• צור קשר עם התמיכה אם הבעיה נמשכת
+
+📞 **תמיכה טכנית:** support@mentorhit.com`,
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        metadata: {
+          demoMode: false,
+          modelUsed: 'Error Handler'
+        }
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
     }
@@ -86,18 +132,24 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMessages([
       {
         id: '1',
-        text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאיך אוכל לעזור לך היום?",
+        text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
         sender: 'ai',
-        timestamp: new Date()
+        timestamp: new Date(),
+        metadata: {
+          demoMode: true,
+          modelUsed: 'Claude 3.5 Sonnet + Amazon Titan + Knowledge Base'
+        }
       }
     ]);
+    setLastError(null);
   };
 
   const contextValue: ChatContextType = {
     messages,
     isTyping,
     sendMessage,
-    clearChat
+    clearChat,
+    lastError
   };
 
   return (
