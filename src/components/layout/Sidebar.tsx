@@ -75,9 +75,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
       {/* User Info & Logout */}
       <div className="p-4 border-t border-hit-dark/40">
         <div className="mb-4 p-3 bg-hit-secondary/20 rounded-lg border border-hit-secondary/30">
-          <p className="text-sm font-medium text-white/90">Current GPA</p>
-          <p className="text-2xl font-bold text-white">{user?.gpa}</p>
-          <p className="text-xs text-white/60">Keep up the great work!</p>
+          <p className="text-sm font-medium text-white/90 text-right">ממוצע</p>
+          <p className="text-2xl font-bold text-white text-right">88</p>
+          <p className="text-xs text-white/60 text-right">!עבודה מצוינת</p>
         </div>
 
         <button

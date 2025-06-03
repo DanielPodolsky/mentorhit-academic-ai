@@ -48,10 +48,16 @@ const Dashboard = () => {
                 <p className="text-sm font-medium text-hit-dark">{user?.name}</p>
                 <p className="text-sm text-hit-secondary">Student ID: {user?.studentId}</p>
               </div>
-              <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
-                <span className="text-white font-medium">
-                  {user?.name?.charAt(0).toUpperCase()}
-                </span>
+              <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                {user?.name.includes('noy') ? (
+                  <img src="noy.png" alt="Noy's picture" className="h-full w-full object-cover" />
+                ) : user?.name.includes('daniel') ? (
+                  <img src="daniel.png" alt="Daniel's picture" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-white font-medium">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
             </div>
           </div>

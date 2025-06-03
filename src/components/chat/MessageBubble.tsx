@@ -79,7 +79,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
           ? 'bg-hit-dark text-white'
           : 'bg-white text-hit-dark border border-gray-200'
           }`}>
-          <div className="whitespace-pre-wrap">
+          <div className="whitespace-pre-wrap text-right">
             {formatMessageText(message.text)}
           </div>
         </div>

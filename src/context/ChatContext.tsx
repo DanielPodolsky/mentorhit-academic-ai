@@ -34,7 +34,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
+      text: "!MentorHIT שלום, אני\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
       sender: 'ai',
       timestamp: new Date(),
       metadata: {
@@ -58,81 +58,104 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsTyping(true);
     setLastError(null);
 
-    try {
-      console.log('🤖 Sending message to MentorHIT Lambda...');
+    let retryCount = 0;
+    const maxRetries = 2;
 
-      // Call the AWS Lambda function
-      const response = await chatAPI.sendMessage({
-        message: text,
-        userId: user?.id || 'anonymous'
-      });
+    while (retryCount <= maxRetries) {
+      try {
+        console.log(`🤖 Sending message to MentorHIT Lambda (attempt ${retryCount + 1}/${maxRetries + 1})...`);
 
-      console.log('✅ Received response from Lambda:', response);
-
-      // Create AI response message with metadata
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: response.message,
-        sender: 'ai',
-        timestamp: new Date(response.timestamp),
-        metadata: {
-          aiPlanUsed: response.aiPlanUsed,
-          dataSourcesQueried: response.dataSourcesQueried,
-          knowledgeBaseUsed: response.knowledgeBaseUsed,
-          modelUsed: response.modelUsed,
-          demoMode: response.demoMode
-        }
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-
-      // Log impressive demo details for debugging
-      if (response.demoMode) {
-        console.log('🎯 Demo mode response details:', {
-          dataSources: response.dataSourcesQueried,
-          knowledgeBase: response.knowledgeBaseUsed,
-          model: response.modelUsed,
-          aiPlan: response.aiPlanUsed
+        // Call the AWS Lambda function
+        const response = await chatAPI.sendMessage({
+          message: text,
+          userId: 'daniel-student' // Can change to "noy-student" for Noy.
         });
-      }
 
-    } catch (error) {
-      console.error('❌ Failed to send message to AWS Lambda:', error);
-      setLastError(error instanceof Error ? error.message : 'Unknown error occurred');
+        console.log('✅ Received response from Lambda:', response);
 
-      // Create error response message
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `מתנצל, אבל נתקלתי בבעיה בחיבור לשרתי AWS. 
+        // Create AI response message with metadata
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: response.message,
+          sender: 'ai',
+          timestamp: new Date(response.timestamp),
+          metadata: {
+            aiPlanUsed: response.aiPlanUsed,
+            dataSourcesQueried: response.dataSourcesQueried,
+            knowledgeBaseUsed: response.knowledgeBaseUsed,
+            modelUsed: response.modelUsed,
+            demoMode: response.demoMode,
+            retryCount: retryCount > 0 ? retryCount : undefined
+          }
+        };
+
+        setMessages(prev => [...prev, aiMessage]);
+
+        // Success - break out of retry loop
+        break;
+
+      } catch (error) {
+        console.error(`❌ Attempt ${retryCount + 1} failed:`, error);
+
+        retryCount++;
+
+        // If this was the last attempt, handle the error
+        if (retryCount > maxRetries) {
+          setLastError(error instanceof Error ? error.message : 'Unknown error occurred');
+
+          // Create error response message
+          const errorMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: error instanceof Error && error.name === 'TimeoutError' ?
+              `⏱️ **הבקשה לוקחת זמן רב מהרגיל**
+
+AI המתקדם של MentorHIT עובד על מענה מפורט עבורך. זה קורה כאשר:
+• מחפש בבסיס הידע של HIT
+• מנתח את הביצועים האקדמיים שלך  
+• יוצר המלצות מותאמות אישית
+
+🔄 **נסה שוב** - התשובה עשויה להיות מוכנה כעת!
+
+📊 **במקרה זה**: המערכת עדיין עובדת על התשובה שלך ברקע.` :
+              `מתנצל, אבל נתקלתי בבעיה בחיבור לשרתי AWS. 
         
 🔧 **פרטי השגיאה:**
 ${error instanceof Error ? error.message : 'שגיאה לא ידועה'}
 
 🔄 **מה ניתן לעשות:**
-• בדוק את חיבור האינטרנט
-• נסה שוב בעוד רגע
+• נסה שוב - המערכת עובדת לסירוגין
+• המתן רגע והמערכת תתייצב
 • צור קשר עם התמיכה אם הבעיה נמשכת
 
 📞 **תמיכה טכנית:** support@mentorhit.com`,
-        sender: 'ai',
-        timestamp: new Date(),
-        metadata: {
-          demoMode: false,
-          modelUsed: 'Error Handler'
-        }
-      };
+            sender: 'ai',
+            timestamp: new Date(),
+            metadata: {
+              demoMode: false,
+              modelUsed: 'Error Handler',
+              retryCount: retryCount - 1
+            }
+          };
 
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsTyping(false);
+          setMessages(prev => [...prev, errorMessage]);
+          break;
+        }
+
+        // Wait before retrying (exponential backoff)
+        const waitTime = Math.pow(2, retryCount) * 1000; // 2s, 4s, 8s
+        console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
     }
+
+    setIsTyping(false);
   };
 
   const clearChat = () => {
     setMessages([
       {
         id: '1',
-        text: "שלום! אני MentorHIT\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
+        text: "!MentorHIT שלום, אני\n\nהיועץ האקדמי הדיגיטלי שלך ממכון הטכנולוגי חולון. אני כאן כדי לעזור לך בתכנון קורסים, הכוונה מקצועית והחלטות אקדמיות.\n\nאני מופעל על ידי Amazon Bedrock עם Claude 3.5 Sonnet ומחובר לבסיס הידע של HIT עם Titan Embeddings v2.\n\nאיך אוכל לעזור לך היום?",
         sender: 'ai',
         timestamp: new Date(),
         metadata: {

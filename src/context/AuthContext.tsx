@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     if (!email.endsWith('@hit.ac.il')) {
       throw new Error('Please use your HIT email address (@hit.ac.il)');
     }
@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     if (!email.endsWith('@hit.ac.il')) {
       throw new Error('Please use your HIT email address (@hit.ac.il)');
     }
