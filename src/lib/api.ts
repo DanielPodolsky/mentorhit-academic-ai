@@ -1,6 +1,12 @@
 export interface ChatRequest {
     message: string;
     userId: string;
+    history?: ConversationMessage[]; // 🆕 Added history support
+}
+
+export interface ConversationMessage {
+    role: 'user' | 'assistant';
+    content: Array<{ text: string }>;
 }
 
 export interface ChatResponse {
@@ -9,52 +15,70 @@ export interface ChatResponse {
     receivedMessage: string;
     userId: string;
     timestamp: string;
-    // Additional fields from your Lambda response
-    aiPlanUsed?: {
+    history: ConversationMessage[]; // 🆕 Added history in response
+    historyLength: number; // 🆕 Added history length
+
+    // Metadata from your Lambda
+    aiPlanUsed: {
         datasets: string[];
         useKnowledgeBase: boolean;
         searchCourses: boolean;
-        specificQueries?: any[];
+        searchJobs: boolean;
+        conversationContextUsed: boolean;
     };
-    dataSourcesQueried?: string[];
-    demoMode?: boolean;
-    knowledgeBaseUsed?: boolean;
-    modelUsed?: string;
+    dataSourcesQueried: string[];
+    datasetsIncluded: {
+        grades: boolean;
+        preferences: boolean;
+        courses: boolean;
+        jobs: boolean;
+    };
+
+    // Performance metrics
+    demoMode: boolean;
+    knowledgeBaseUsed: boolean;
+    jobSearchUsed: boolean;
+    modelUsed: string;
+    responseTime: number;
+    optimized: boolean;
+    conversationEnabled: boolean;
+
+    // Debug info
+    debug: {
+        plannerSource: string;
+        datasetsRequested: string[];
+        coursesFound: number;
+        jobsFound: number;
+        historyManaged: boolean;
+    };
 }
 
 export interface APIError {
-    success: false;
     error: string;
-    message: string;
-    timestamp: string;
     details?: string;
+    message?: string;
 }
 
 export const chatAPI = {
     sendMessage: async (request: ChatRequest): Promise<ChatResponse> => {
         try {
-            console.log('🚀 Sending request to MentorHIT AWS Lambda:', request);
+            console.log('🚀 Sending request to AWS Lambda:', {
+                message: request.message,
+                userId: request.userId,
+                historyLength: request.history?.length || 0
+            });
 
-            // Get the API base URL from environment variables
             const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-            if (!API_BASE_URL) {
-                console.warn('⚠️ VITE_API_BASE_URL not set, using fallback URL');
-            }
-
-            // Use environment variable or fallback URL
-            const apiUrl = API_BASE_URL || 'https://your-api-gateway-url.amazonaws.com/prod';
-
-            const response = await fetch(`${apiUrl}/chat`, {
+            const response = await fetch(`${API_BASE_URL}/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
                 },
                 body: JSON.stringify(request),
             });
 
-            console.log('📡 AWS Lambda Response status:', response.status);
+            console.log('📡 AWS Response status:', response.status);
 
             if (!response.ok) {
                 const errorText = await response.text();
@@ -63,19 +87,18 @@ export const chatAPI = {
             }
 
             const data = await response.json();
-            console.log('✅ AWS Lambda Response data:', data);
+            console.log('✅ AWS Response received:', {
+                success: data.success,
+                messageLength: data.message?.length || 0,
+                historyLength: data.historyLength || 0,
+                responseTime: data.responseTime,
+                modelUsed: data.modelUsed,
+                conversationEnabled: data.conversationEnabled
+            });
 
-            // Validate response structure
-            if (!data.success && data.error) {
-                throw new Error(data.message || data.error);
-            }
-
-            return data as ChatResponse;
-
+            return data;
         } catch (error) {
             console.error('❌ Chat API Error:', error);
-
-            // Re-throw the error to be handled by the calling component
             throw error;
         }
     },
