@@ -20,27 +20,34 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Helper function to detect if text contains Hebrew
+  const containsHebrew = (text: string) => {
+    return /[\u0590-\u05FF]/.test(text);
+  };
+
   const formatMessageText = (text: string) => {
     const lines = text.split('\n');
+    const hasHebrew = containsHebrew(text);
+
     return lines.map((line, index) => {
       // Handle bullet points
       if (line.trim().startsWith('• ')) {
         const parts = line.split('**');
         if (parts.length >= 3) {
           return (
-            <div key={index} className="mb-1">
+            <div key={index} className={`mb-1 ${hasHebrew ? 'text-right' : 'text-left'}`} dir={hasHebrew ? 'rtl' : 'ltr'}>
               • <strong>{parts[1]}</strong>{parts[2]}
             </div>
           );
         }
-        return <div key={index} className="mb-1">{line}</div>;
+        return <div key={index} className={`mb-1 ${hasHebrew ? 'text-right' : 'text-left'}`} dir={hasHebrew ? 'rtl' : 'ltr'}>{line}</div>;
       }
 
       // Handle bold text
       if (line.includes('**')) {
         const parts = line.split('**');
         return (
-          <div key={index} className={index > 0 ? 'mt-2' : ''}>
+          <div key={index} className={`${index > 0 ? 'mt-2' : ''} ${hasHebrew ? 'text-right' : 'text-left'}`} dir={hasHebrew ? 'rtl' : 'ltr'}>
             {parts.map((part, partIndex) =>
               partIndex % 2 === 1 ? <strong key={partIndex}>{part}</strong> : part
             )}
@@ -50,7 +57,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
 
       // Regular line
       return line.trim() ? (
-        <div key={index} className={index > 0 ? 'mt-2' : ''}>
+        <div key={index} className={`${index > 0 ? 'mt-2' : ''} ${hasHebrew ? 'text-right' : 'text-left'}`} dir={hasHebrew ? 'rtl' : 'ltr'}>
           {line}
         </div>
       ) : (
@@ -62,9 +69,32 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
   // Mobile-optimized job card rendering
   const renderJobCard = (job: any, index: number) => {
     return (
-      <div key={index} className="bg-white rounded-xl border border-gray-200 p-3 lg:p-4 mb-3 shadow-sm hover:shadow-md transition-shadow">
-        {/* Header - Mobile optimized */}
-        <div className="flex items-start space-x-2 lg:space-x-3 mb-3">
+      <div key={index} className="bg-white rounded-xl border border-gray-200 p-3 lg:p-4 mb-3 shadow-sm hover:shadow-md transition-shadow" dir="rtl">
+        {/* Header - Mobile optimized with RTL */}
+        <div className="flex items-start space-x-2 lg:space-x-3 mb-3 space-x-reverse">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-hit-dark text-base lg:text-lg leading-tight text-right">
+              {job.title}
+            </h3>
+            <p className="text-hit-secondary font-medium text-sm lg:text-base text-right">{job.company}</p>
+
+            {/* Location and Salary - Mobile stack with RTL */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-2 text-xs lg:text-sm text-hit-secondary space-y-1 sm:space-y-0 sm:space-x-reverse sm:justify-end">
+              <div className="flex items-center space-x-1 space-x-reverse justify-end">
+                <span className="truncate">{job.location}</span>
+                <MapPin className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
+              </div>
+              <div className="flex items-center space-x-1 space-x-reverse justify-end">
+                <span className="font-medium text-hit-dark">{job.salary}</span>
+                <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
+              </div>
+              <div className="flex items-center space-x-1 space-x-reverse justify-end">
+                <span>{Math.round(job.match_score * 100)}% התאמה</span>
+                <Star className="w-3 h-3 lg:w-4 lg:h-4 text-yellow-500 flex-shrink-0" />
+              </div>
+            </div>
+          </div>
+
           {job.logo ? (
             <img
               src={job.logo}
@@ -80,38 +110,15 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
           <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-hit-primary flex items-center justify-center flex-shrink-0 ${job.logo ? 'hidden' : ''}`}>
             <Building2 className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
           </div>
-
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-hit-dark text-base lg:text-lg leading-tight pr-2">
-              {job.title}
-            </h3>
-            <p className="text-hit-secondary font-medium text-sm lg:text-base">{job.company}</p>
-
-            {/* Location and Salary - Mobile stack */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mt-2 text-xs lg:text-sm text-hit-secondary space-y-1 sm:space-y-0">
-              <div className="flex items-center space-x-1">
-                <MapPin className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
-                <span className="truncate">{job.location}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <DollarSign className="w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0" />
-                <span className="font-medium text-hit-dark">{job.salary}</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Star className="w-3 h-3 lg:w-4 lg:h-4 text-yellow-500 flex-shrink-0" />
-                <span>{Math.round(job.match_score * 100)}% התאמה</span>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* Job Description - Mobile optimized */}
-        <p className="text-hit-dark text-xs lg:text-sm mb-3 leading-relaxed text-right">
+        {/* Job Description - Mobile optimized with RTL */}
+        <p className="text-hit-dark text-xs lg:text-sm mb-3 leading-relaxed text-right" dir="rtl">
           {job.description}
         </p>
 
-        {/* Skills Tags - Mobile responsive grid */}
-        <div className="flex flex-wrap gap-1.5 lg:gap-2 mb-3">
+        {/* Skills Tags - Mobile responsive grid with RTL */}
+        <div className="flex flex-wrap gap-1.5 lg:gap-2 mb-3 justify-end" dir="rtl">
           {job.skills && job.skills.slice(0, window.innerWidth < 768 ? 3 : 4).map((skill: string, skillIndex: number) => (
             <span
               key={skillIndex}
@@ -151,23 +158,24 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
         )}
       </div>
 
-      {/* Message Content - Mobile optimized */}
+      {/* Message Content - Mobile optimized with RTL support */}
       <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[85%] lg:max-w-4xl flex-1`}>
-        {/* Regular Message Bubble */}
+        {/* Regular Message Bubble with automatic RTL detection */}
         <div className={`rounded-2xl px-3 py-2 lg:px-4 lg:py-3 shadow-sm ${isUser
-            ? 'bg-hit-dark text-white'
-            : 'bg-white text-hit-dark border border-gray-200'
+          ? 'bg-hit-dark text-white'
+          : 'bg-white text-hit-dark border border-gray-200'
           }`}>
-          <div className="whitespace-pre-wrap text-right text-sm lg:text-base">
+          <div className="whitespace-pre-wrap text-sm lg:text-base">
             {formatMessageText(message.text)}
           </div>
         </div>
 
-        {/* Job Cards Section - Mobile optimized */}
+        {/* Job Cards Section - Mobile optimized with RTL */}
         {shouldShowJobCards && (
-          <div className="mt-3 lg:mt-4 w-full max-w-full lg:max-w-3xl">
-            {/* Job Cards Header */}
-            <div className="flex items-center space-x-2 mb-3 lg:mb-4 justify-end">
+          <div className="mt-3 lg:mt-4 w-full max-w-full lg:max-w-3xl" dir="rtl">
+            {/* Job Cards Header with RTL */}
+            <div className="flex items-center space-x-2 mb-3 lg:mb-4 justify-start space-x-reverse">
+              <Briefcase className="w-5 h-5 lg:w-6 lg:h-6 text-hit-primary flex-shrink-0" />
               <div className="text-right">
                 <h4 className="text-base lg:text-lg font-semibold text-hit-dark">
                   משרות מומלצות ({jobData.jobs.length})
@@ -176,7 +184,6 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
                   <p className="text-xs lg:text-sm text-hit-secondary">משרות בתחום האבטחה והסייבר</p>
                 )}
               </div>
-              <Briefcase className="w-5 h-5 lg:w-6 lg:h-6 text-hit-primary flex-shrink-0" />
             </div>
 
             {/* Job Cards */}
@@ -184,9 +191,9 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, jobData }) => {
               {jobData.jobs.map((job: any, index: number) => renderJobCard(job, index))}
             </div>
 
-            {/* Footer */}
+            {/* Footer with RTL */}
             {jobData.totalJobsFound && jobData.totalJobsFound > jobData.jobs.length && (
-              <div className="mt-3 lg:mt-4 p-3 bg-hit-light rounded-lg border border-hit-primary/20 text-center">
+              <div className="mt-3 lg:mt-4 p-3 bg-hit-light rounded-lg border border-hit-primary/20 text-center" dir="rtl">
                 <p className="text-xs lg:text-sm text-hit-dark">
                   יש עוד <strong>{jobData.totalJobsFound - jobData.jobs.length}</strong> משרות נוספות בתחום.
                   האם תרצה לראות אותן?
