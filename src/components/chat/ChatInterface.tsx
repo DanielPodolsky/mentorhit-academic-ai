@@ -6,8 +6,15 @@ import SuggestedPrompts from './SuggestedPrompts';
 
 const ChatInterface = () => {
   const [inputValue, setInputValue] = useState('');
-  const [showDebugInfo, setShowDebugInfo] = useState(false); // 🆕 Debug toggle
-  const { messages, isTyping, sendMessage, conversationHistory, lastResponseMetadata } = useChat();
+  const [showDebugInfo, setShowDebugInfo] = useState(false);
+  const {
+    messages,
+    isTyping,
+    sendMessage,
+    conversationHistory,
+    lastResponseMetadata,
+    lastJobData // NEW: Get job data from context
+  } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -59,7 +66,7 @@ const ChatInterface = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* 🆕 Debug Info Panel (Optional - for development) */}
+      {/* Debug Info Panel (Optional - for development) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="bg-gray-100 border-b p-2">
           <button
@@ -79,6 +86,10 @@ const ChatInterface = () => {
                 .map(([dataset]) => dataset)
                 .join(', ') || 'None'}</div>
               <div><strong>Knowledge Base:</strong> {lastResponseMetadata.knowledgeBaseUsed ? 'Yes' : 'No'}</div>
+              <div><strong>Job Search:</strong> {lastResponseMetadata.jobSearchUsed ? 'Yes' : 'No'}</div>
+              {lastJobData && (
+                <div><strong>Jobs Found:</strong> {lastJobData.totalJobsFound || 0}</div>
+              )}
               <div><strong>Conversation History:</strong> {conversationHistory.length} messages</div>
             </div>
           )}
@@ -89,9 +100,20 @@ const ChatInterface = () => {
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto">
           <div className="p-6 space-y-6 bg-hit-light min-h-full">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
+            {messages.map((message, index) => {
+              // For AI messages, check if this is the last message and pass job data
+              const shouldPassJobData = message.sender === 'ai' &&
+                index === messages.length - 1 &&
+                lastJobData;
+
+              return (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                  jobData={shouldPassJobData ? lastJobData : undefined}
+                />
+              );
+            })}
 
             {isTyping && (
               <div className="flex items-start space-x-3">
