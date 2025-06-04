@@ -31,28 +31,28 @@ const LoginForm = () => {
 
   return (
     <div className="min-h-screen bg-hit-gradient flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
+      <div className="max-w-md w-full space-y-6 lg:space-y-8">
+        {/* Header - Mobile optimized */}
         <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-hit-secondary rounded-xl flex items-center justify-center mb-4 shadow-lg">
-            <span className="text-white font-bold text-xl">HIT</span>
+          <div className="mx-auto h-14 w-14 lg:h-16 lg:w-16 bg-hit-secondary rounded-xl flex items-center justify-center mb-3 lg:mb-4 shadow-lg">
+            <span className="text-white font-bold text-lg lg:text-xl">HIT</span>
           </div>
-          <h2 className="text-3xl font-bold text-hit-dark">MentorHIT</h2>
-          <p className="mt-2 text-hit-secondary">
+          <h2 className="text-2xl lg:text-3xl font-bold text-hit-dark">MentorHIT</h2>
+          <p className="mt-2 text-sm lg:text-base text-hit-secondary">
             Your AI Academic Advisor for Holon Institute of Technology
           </p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        {/* Form - Mobile optimized */}
+        <div className="bg-white rounded-xl shadow-lg p-6 lg:p-8 border border-gray-200">
           <div className="mb-6 text-center">
-            <h3 className="text-xl font-semibold text-hit-dark">Sign In</h3>
+            <h3 className="text-lg lg:text-xl font-semibold text-hit-dark">Sign In</h3>
             <p className="text-sm text-hit-secondary mt-1">
               Access your academic advisor
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 lg:space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-hit-dark mb-2">
                 HIT Email Address
@@ -66,7 +66,7 @@ const LoginForm = () => {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
+                  className="w-full pl-10 pr-4 py-3.5 lg:py-3 text-base lg:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
                   placeholder="your.name@hit.ac.il"
                 />
               </div>
@@ -86,13 +86,13 @@ const LoginForm = () => {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
+                  className="w-full pl-10 pr-12 py-3.5 lg:py-3 text-base lg:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-hit-secondary hover:text-hit-dark transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-hit-secondary hover:text-hit-dark transition-colors touch-manipulation"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -108,7 +108,7 @@ const LoginForm = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-hit-primary text-white py-3 px-4 rounded-lg font-medium hover:bg-hit-primary-hover focus:ring-2 focus:ring-hit-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              className="w-full bg-hit-primary text-white py-4 lg:py-3 px-4 rounded-lg font-medium hover:bg-hit-primary-hover focus:ring-2 focus:ring-hit-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md touch-manipulation"
             >
               {loading ? (
                 <div className="flex items-center justify-center">
@@ -122,14 +122,14 @@ const LoginForm = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-hit-secondary">
+            <p className="text-xs lg:text-sm text-hit-secondary">
               Demo credentials: Any @hit.ac.il email with any password
             </p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center text-sm text-hit-secondary">
+        <div className="text-center text-xs lg:text-sm text-hit-secondary">
           <p>Hackathon Project by Team MentorHIT</p>
         </div>
       </div>

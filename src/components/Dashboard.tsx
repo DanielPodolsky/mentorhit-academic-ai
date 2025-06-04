@@ -24,55 +24,79 @@ const Dashboard = () => {
     }
   };
 
+  const getPageTitle = () => {
+    switch (activePage) {
+      case 'chat':
+        return 'Academic Advisor Chat';
+      case 'preferences':
+        return 'Preferences Setup';
+      case 'profile':
+        return 'Your Profile';
+      default:
+        return 'Academic Advisor Chat';
+    }
+  };
+
   return (
-    < div className="h-screen bg-hit-light flex overflow-hidden" >
+    <div className="h-screen bg-hit-light flex overflow-hidden">
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
 
-      {/* KEY: Use flex-1 and flex flex-col to create a column layout that takes remaining space */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header - fixed height */}
-        <header className="flex-shrink-0 bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-hit-dark">
-                {activePage === 'chat' && 'Academic Advisor Chat'}
-                {activePage === 'preferences' && 'Preferences Setup'}
-                {activePage === 'profile' && 'Your Profile'}
-              </h1>
-              <p className="text-hit-secondary">
-                Welcome back, {user?.name}
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="hidden md:block text-right">
-                <p className="text-sm font-medium text-hit-dark">{user?.name}</p>
-                <p className="text-sm text-hit-secondary">Student ID: {user?.studentId}</p>
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-0">
+        {/* Header - Mobile optimized */}
+        <header className="flex-shrink-0 bg-white border-b border-gray-200 shadow-sm">
+          <div className="px-4 lg:px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Title - Responsive text size */}
+              <div className="ml-16 lg:ml-0">
+                <h1 className="text-xl lg:text-2xl font-bold text-hit-dark truncate">
+                  {getPageTitle()}
+                </h1>
+                <p className="text-sm lg:text-base text-hit-secondary hidden sm:block">
+                  Welcome back, {user?.name}
+                </p>
               </div>
-              <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm overflow-hidden">
-                {user?.name.includes('noy') ? (
-                  <img src="noy.png" alt="Noy's picture" className="h-full w-full object-cover" />
-                ) : user?.name.includes('daniel') ? (
-                  <img src="daniel.png" alt="Daniel's picture" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-white font-medium">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
-                )}
+
+              {/* User Avatar - Mobile friendly */}
+              <div className="flex items-center space-x-3">
+                <div className="hidden md:block text-right">
+                  <p className="text-sm font-medium text-hit-dark truncate max-w-32">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs lg:text-sm text-hit-secondary">
+                    ID: {user?.studentId}
+                  </p>
+                </div>
+                <div className="h-10 w-10 lg:h-12 lg:w-12 bg-hit-primary rounded-full flex items-center justify-center shadow-sm overflow-hidden">
+                  {user?.name.includes('noy') ? (
+                    <img
+                      src="noy.png"
+                      alt="Noy's picture"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : user?.name.includes('daniel') ? (
+                    <img
+                      src="daniel.png"
+                      alt="Daniel's picture"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-white font-medium text-lg">
+                      {user?.name?.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* 
-          KEY: Main Content - takes remaining space and enables overflow
-          flex-1 makes it take up remaining space after header
-          overflow-hidden prevents the main content from growing the parent
-        */}
+        {/* Main Content - Full height with proper mobile handling */}
         <main className="flex-1 overflow-hidden bg-hit-light">
           {renderPage()}
         </main>
       </div>
-    </div >
+    </div>
   );
 };
 

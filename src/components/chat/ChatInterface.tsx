@@ -13,7 +13,7 @@ const ChatInterface = () => {
     sendMessage,
     conversationHistory,
     lastResponseMetadata,
-    lastJobData // NEW: Get job data from context
+    lastJobData
   } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -54,7 +54,8 @@ const ChatInterface = () => {
     // Auto-resize textarea
     const textarea = e.target;
     textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    const maxHeight = window.innerWidth < 768 ? 100 : 120; // Smaller max height on mobile
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -66,9 +67,9 @@ const ChatInterface = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Debug Info Panel (Optional - for development) */}
+      {/* Debug Info Panel - Hide on mobile in production */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-100 border-b p-2">
+        <div className="bg-gray-100 border-b p-2 hidden lg:block">
           <button
             onClick={() => setShowDebugInfo(!showDebugInfo)}
             className="flex items-center space-x-2 text-xs text-gray-600 hover:text-gray-800"
@@ -96,12 +97,11 @@ const ChatInterface = () => {
         </div>
       )}
 
-      {/* Chat Messages Area */}
+      {/* Chat Messages Area - Mobile optimized */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto">
-          <div className="p-6 space-y-6 bg-hit-light min-h-full">
+          <div className="p-3 lg:p-6 space-y-4 lg:space-y-6 bg-hit-light min-h-full">
             {messages.map((message, index) => {
-              // For AI messages, check if this is the last message and pass job data
               const shouldPassJobData = message.sender === 'ai' &&
                 index === messages.length - 1 &&
                 lastJobData;
@@ -117,17 +117,17 @@ const ChatInterface = () => {
 
             {isTyping && (
               <div className="flex items-start space-x-3">
-                <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
-                  <img src="logo-white.png" className="h-8 w-8 text-white text-sm font-medium" alt="" />
+                <div className="h-8 w-8 lg:h-10 lg:w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-sm">
+                  <img src="logo-white.png" className="h-6 w-6 lg:h-8 lg:w-8" alt="" />
                 </div>
-                <div className="bg-white rounded-2xl px-4 py-3 max-w-xs border border-gray-200 shadow-sm">
+                <div className="bg-white rounded-2xl px-3 py-2 lg:px-4 lg:py-3 max-w-xs border border-gray-200 shadow-sm">
                   <div className="flex items-center space-x-1">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                       <div className="w-2 h-2 bg-hit-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
-                    <span className="text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
+                    <span className="text-xs lg:text-sm text-hit-secondary ml-2">MentorHIT is thinking...</span>
                   </div>
                 </div>
               </div>
@@ -138,16 +138,16 @@ const ChatInterface = () => {
         </div>
       </div>
 
-      {/* Suggested Prompts - Only show when there's minimal chat history */}
+      {/* Suggested Prompts - Mobile optimized */}
       {messages.length <= 1 && (
-        <div className="px-6 pb-4 bg-hit-light flex-shrink-0">
+        <div className="px-3 lg:px-6 pb-2 lg:pb-4 bg-hit-light flex-shrink-0">
           <SuggestedPrompts onPromptClick={handleSuggestedPrompt} />
         </div>
       )}
 
-      {/* Input Area */}
-      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-6">
-        <form onSubmit={handleSubmit} className="flex items-end space-x-4">
+      {/* Input Area - Mobile optimized */}
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-3 lg:p-6 safe-area-inset-bottom">
+        <form onSubmit={handleSubmit} className="flex items-end space-x-2 lg:space-x-4">
           <div className="flex-1 relative">
             <textarea
               ref={textareaRef}
@@ -155,15 +155,18 @@ const ChatInterface = () => {
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder="...שאלו על קורסים, ייעוץ קריירה או תכנון אקדמי"
-              className="w-full px-4 py-3 border border-gray-300 rounded-2xl resize-none focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors text-right"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
+              className="w-full px-3 lg:px-4 py-2 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-xl lg:rounded-2xl resize-none focus:ring-2 focus:ring-hit-primary focus:border-hit-primary transition-colors text-right"
+              style={{
+                minHeight: '44px',
+                maxHeight: window.innerWidth < 768 ? '100px' : '120px'
+              }}
               disabled={isTyping}
             />
           </div>
           <button
             type="submit"
             disabled={!inputValue.trim() || isTyping}
-            className="bg-hit-primary text-white p-3 rounded-full hover:bg-hit-primary-hover focus:ring-2 focus:ring-hit-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+            className="bg-hit-primary text-white p-2.5 lg:p-3 rounded-full hover:bg-hit-primary-hover focus:ring-2 focus:ring-hit-primary focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md touch-manipulation"
           >
             {isTyping ? (
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -173,10 +176,11 @@ const ChatInterface = () => {
           </button>
         </form>
 
-        <p className="text-xs text-hit-secondary mt-2 text-center">
-          Press Enter to send, Shift+Enter for new line
+        <p className="text-xs text-hit-secondary mt-2 text-center px-2">
+          <span className="hidden lg:inline">Press Enter to send, Shift+Enter for new line</span>
+          <span className="lg:hidden">Tap send to submit your message</span>
           {conversationHistory.length > 0 && (
-            <span className="ml-2">• Conversation: {conversationHistory.length} messages</span>
+            <span className="ml-2 hidden sm:inline">• Conversation: {conversationHistory.length} messages</span>
           )}
         </p>
       </div>

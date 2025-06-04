@@ -135,34 +135,54 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, sans-serif;
+    /* Prevent zooming on iOS when focusing inputs */
+    -webkit-text-size-adjust: 100%;
   }
 
   /* Smooth scrolling for better UX */
   html {
     scroll-behavior: smooth;
+    /* Prevent horizontal scrolling on mobile */
+    overflow-x: hidden;
+  }
+
+  /* Mobile viewport adjustments */
+  @media screen and (max-width: 768px) {
+
+    html,
+    body {
+      overflow-x: hidden;
+      position: relative;
+    }
   }
 }
 
 /* HIT-specific component styles */
 @layer components {
 
-  /* Primary button with HIT colors */
+  /* Primary button with HIT colors - Mobile optimized */
   .btn-hit-primary {
     @apply bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    /* Mobile: Larger touch targets */
+    min-height: 44px;
   }
 
   /* Secondary button with HIT colors */
   .btn-hit-secondary {
     @apply bg-secondary text-secondary-foreground hover:bg-secondary/90 focus:ring-2 focus:ring-secondary focus:ring-offset-2;
+    min-height: 44px;
   }
 
-  /* Chat bubble styling */
+  /* Chat bubble styling - Mobile responsive */
   .chat-bubble-user {
     @apply bg-primary text-primary-foreground;
+    /* Mobile: Better spacing */
+    @apply px-3 py-2 lg:px-4 lg:py-3;
   }
 
   .chat-bubble-ai {
     @apply bg-card text-card-foreground border border-border;
+    @apply px-3 py-2 lg:px-4 lg:py-3;
   }
 
   /* HIT gradient background */
@@ -170,14 +190,19 @@
     background: linear-gradient(135deg, #E8F7F8 0%, #B8E6E8 50%, #7DD3DA 100%);
   }
 
-  /* HIT brand card */
+  /* HIT brand card - Mobile responsive */
   .hit-card {
     @apply bg-card border border-border shadow-sm rounded-lg;
+    /* Mobile: Better touch targets and spacing */
+    @apply p-3 lg:p-4;
   }
 
-  /* Sidebar specific styles */
+  /* Sidebar specific styles - Mobile responsive */
   .sidebar-item {
     @apply text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+    /* Mobile: Larger touch targets */
+    min-height: 48px;
+    @apply px-4 py-3 lg:py-2;
   }
 
   .sidebar-item-active {
@@ -187,6 +212,32 @@
   /* HIT logo background */
   .hit-logo-bg {
     background: linear-gradient(135deg, #007377 0%, #0097A7 100%);
+  }
+
+  /* Mobile-specific touch improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Safe area support for mobile devices */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Mobile keyboard handling */
+  @media screen and (max-height: 600px) {
+    .chat-input-area {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
   }
 }
 
@@ -228,11 +279,44 @@
   .bg-hit-gradient-reverse {
     background: linear-gradient(135deg, #0097A7 0%, #007377 50%, #032F32 100%);
   }
+
+  /* Mobile-specific utilities */
+  .mobile-full-height {
+    height: 100vh;
+    height: 100dvh;
+    /* Dynamic viewport height for mobile */
+  }
+
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Text size responsive */
+  .text-responsive {
+    @apply text-sm lg:text-base;
+  }
+
+  .text-responsive-lg {
+    @apply text-base lg:text-lg;
+  }
+
+  .text-responsive-xl {
+    @apply text-lg lg:text-xl;
+  }
 }
 
-/* Custom scrollbar with HIT colors */
+/* Custom scrollbar with HIT colors - Mobile friendly */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
+  height: 4px;
+}
+
+@media screen and (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 }
 
 ::-webkit-scrollbar-track {
@@ -246,4 +330,64 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #0097A7;
+}
+
+/* Mobile-specific improvements */
+@media screen and (max-width: 768px) {
+
+  /* Hide scrollbars on mobile for cleaner look */
+  .mobile-hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .mobile-hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Improve form inputs on mobile */
+  input[type="email"],
+  input[type="password"],
+  input[type="text"],
+  textarea {
+    font-size: 16px;
+    /* Prevent zoom on iOS */
+    transform: translateZ(0);
+    /* Force hardware acceleration */
+  }
+
+  /* Improve button interactions */
+  button {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better mobile animations */
+  .animate-bounce {
+    animation-duration: 1s;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (prefers-reduced-motion: reduce) {
+
+  .animate-bounce,
+  .animate-spin,
+  .transition-all,
+  .transition-colors,
+  .transition-transform {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-gray-200 {
+    @apply border-gray-400;
+  }
+
+  .text-hit-secondary {
+    @apply text-hit-dark;
+  }
 }
