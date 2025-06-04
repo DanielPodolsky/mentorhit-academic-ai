@@ -258,22 +258,24 @@ const PreferencesQuiz = () => {
   // Completion screen
   if (isCompleted) {
     return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
-        <div className="bg-hit-light rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6 shadow-lg">
-          <Check className="h-8 w-8 text-hit-primary" />
+      <div className="h-full overflow-y-auto">
+        <div className="max-w-2xl mx-auto p-4 md:p-8 text-center">
+          <div className="bg-hit-light rounded-full w-12 h-12 md:w-16 md:h-16 flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-lg">
+            <Check className="h-6 w-6 md:h-8 md:w-8 text-hit-primary" />
+          </div>
+          <h2 className="text-xl md:text-2xl font-bold text-hit-dark mb-4">
+            ההעדפות נשמרו בהצלחה!
+          </h2>
+          <p className="text-hit-secondary mb-6 md:mb-8 text-sm md:text-base">
+            תודה שהשלמתם את השאלון. מנטורהיט יוכל כעת לספק לך הכוונה אקדמית ומקצועית מותאמת אישית על בסיס תחומי העניין שלך.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover transition-colors shadow-md"
+          >
+            התחילו שיחה איתנו :)
+          </button>
         </div>
-        <h2 className="text-2xl font-bold text-hit-dark mb-4">
-          ההעדפות נשמרו בהצלחה!
-        </h2>
-        <p className="text-hit-secondary mb-8">
-          תודה שהשלמתם את השאלון. מנטורהיט יוכל כעת לספק לך הכוונה אקדמית ומקצועית מותאמת אישית על בסיס תחומי העניין שלך.
-        </p>
-        <button
-          onClick={() => window.location.reload()}
-          className="bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover transition-colors shadow-md"
-        >
-          התחילו שיחה איתנו :)
-        </button>
       </div>
     );
   }
@@ -282,134 +284,178 @@ const PreferencesQuiz = () => {
 
   if (!currentStepData) {
     return (
-      <div className="max-w-2xl mx-auto p-8 text-center">
-        <p className="text-red-600">שגיאה: שלב לא קיים</p>
-        <button
-          onClick={() => setCurrentStep(0)}
-          className="mt-4 bg-hit-primary text-white px-4 py-2 rounded-lg"
-        >
-          חזור להתחלה
-        </button>
+      <div className="h-full overflow-y-auto">
+        <div className="max-w-2xl mx-auto p-4 md:p-8 text-center">
+          <p className="text-red-600">שגיאה: שלב לא קיים</p>
+          <button
+            onClick={() => setCurrentStep(0)}
+            className="mt-4 bg-hit-primary text-white px-4 py-2 rounded-lg"
+          >
+            חזור להתחלה
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex justify-between text-sm text-hit-secondary mb-2">
-          <span>שלב {currentStep + 1} מתוך {steps.length}</span>
-          <span>{Math.round(progress)}% הושלם</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-hit-primary h-2 rounded-full transition-all duration-300 shadow-sm"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pb-8">
 
-      {/* Question */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-hit-dark mb-2 text-right">
-          {currentStepData.title}
-        </h1>
-        <p className="text-xl text-hit-secondary text-right">
-          {currentStepData.question}
-        </p>
-        {currentStepData.type === 'multiple' && (
-          <p className="text-sm text-hit-secondary/70 mt-2 text-right">
-            אתם יכולים לבחור יותר מתשובה אחת
+        {/* Question */}
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-hit-dark mb-2 text-right">
+            {currentStepData.title}
+          </h1>
+          <p className="text-lg md:text-xl text-hit-secondary text-right">
+            {currentStepData.question}
           </p>
-        )}
-      </div>
+          {currentStepData.type === 'multiple' && (
+            <p className="text-xs md:text-sm text-hit-secondary/70 mt-2 text-right">
+              אתם יכולים לבחור יותר מתשובה אחת
+            </p>
+          )}
+        </div>
 
-      {/* Options */}
-      <div className="space-y-3 mb-8">
-        {currentStepData.options.map((option) => {
-          const currentAnswers = answers[currentStepData.id] || [];
-          const isSelected = currentAnswers.includes(option.value);
+        {/* Options */}
+        <div className="space-y-3 mb-6 md:mb-8">
+          {currentStepData.options.map((option) => {
+            const currentAnswers = answers[currentStepData.id] || [];
+            const isSelected = currentAnswers.includes(option.value);
 
-          return (
-            <button
-              key={option.value}
-              onClick={() => handleAnswerChange(currentStepData.id, option.value, currentStepData.type === 'multiple')}
-              className={`w-full p-4 border-2 rounded-xl text-right transition-all shadow-sm hover:shadow-md ${isSelected
+            return (
+              <button
+                key={option.value}
+                onClick={() => handleAnswerChange(currentStepData.id, option.value, currentStepData.type === 'multiple')}
+                className={`w-full p-3 md:p-4 border-2 rounded-xl text-right transition-all shadow-sm hover:shadow-md ${isSelected
                   ? 'border-hit-primary bg-hit-light shadow-md'
                   : 'border-gray-200 hover:border-hit-secondary bg-white'
-                }`}
-            >
-              <div className="flex items-start justify-between flex-row-reverse">
-                <div className="flex-1 text-right">
-                  <h3 className="font-medium text-hit-dark mb-1">
-                    {option.label}
-                  </h3>
-                  {option.description && (
-                    <p className="text-sm text-hit-secondary">
-                      {option.description}
-                    </p>
-                  )}
-                </div>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ml-3 transition-colors ${isSelected
+                  }`}
+              >
+                <div className="flex items-start justify-between flex-row-reverse">
+                  <div className="flex-1 text-right">
+                    <h3 className="font-medium text-hit-dark mb-1 text-sm md:text-base">
+                      {option.label}
+                    </h3>
+                    {option.description && (
+                      <p className="text-xs md:text-sm text-hit-secondary leading-relaxed">
+                        {option.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className={`w-4 h-4 md:w-5 md:h-5 rounded-full border-2 flex items-center justify-center ml-3 transition-colors flex-shrink-0 ${isSelected
                     ? 'border-hit-primary bg-hit-primary'
                     : 'border-gray-300'
-                  }`}>
-                  {isSelected && <Check className="h-3 w-3 text-white" />}
+                    }`}>
+                    {isSelected && <Check className="h-2 w-2 md:h-3 md:w-3 text-white" />}
+                  </div>
                 </div>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Navigation */}
-      <div className="flex justify-between items-center">
-        <button
-          onClick={handlePrev}
-          disabled={currentStep === 0}
-          className="flex items-center space-x-2 px-4 py-2 text-hit-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:text-hit-dark transition-colors"
-        >
-          <ChevronLeft className="h-5 w-5" />
-          <span>הקודם</span>
-        </button>
-
-        {currentStep === steps.length - 1 ? (
-          <button
-            onClick={handleSubmit}
-            disabled={!canProceed() || isSubmitting}
-            className="flex items-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                <span>שומר...</span>
-              </>
-            ) : (
-              <>
-                <span>סיום השאלון</span>
-                <Check className="h-5 w-5" />
-              </>
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={handleNext}
-            disabled={!canProceed()}
-            className="flex items-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
-          >
-            <span>הבא</span>
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        )}
-      </div>
-
-      {/* Debug info (development only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-8 p-4 bg-gray-100 rounded-lg text-xs">
-          <strong>Debug:</strong> Current step: {currentStep}, Answers: {JSON.stringify(answers)}
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        {/* Navigation */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center space-y-3 md:space-y-0">
+          <button
+            onClick={handlePrev}
+            disabled={currentStep === 0}
+            className="flex items-center justify-center md:justify-start space-x-2 px-4 py-2 text-hit-secondary disabled:opacity-50 disabled:cursor-not-allowed hover:text-hit-dark transition-colors order-2 md:order-1"
+          >
+            <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="text-sm md:text-base">הקודם</span>
+          </button>
+
+          {currentStep === steps.length - 1 ? (
+            <button
+              onClick={handleSubmit}
+              disabled={!canProceed() || isSubmitting}
+              className="flex items-center justify-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md order-1 md:order-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 md:h-5 md:w-5 border-b-2 border-white" />
+                  <span className="text-sm md:text-base">שומר...</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm md:text-base">סיום השאלון</span>
+                  <Check className="h-4 w-4 md:h-5 md:w-5" />
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              disabled={!canProceed()}
+              className="flex items-center justify-center space-x-2 bg-hit-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-hit-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md order-1 md:order-2"
+            >
+              <span className="text-sm md:text-base">הבא</span>
+              <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Beautiful Progress Summary */}
+        <div className="mt-6 md:mt-8 bg-gradient-to-r from-hit-light to-white rounded-xl p-4 md:p-6 border border-hit-primary/20 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="h-8 w-8 bg-hit-primary rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">{currentStep + 1}</span>
+              </div>
+              <div>
+                <h4 className="font-semibold text-hit-dark text-sm md:text-base">התקדמות השאלון</h4>
+                <p className="text-xs md:text-sm text-hit-secondary">
+                  {currentStep === steps.length - 1 ? 'כמעט סיימתם!' : 'אתם עושים עבודה מצוינת'}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-lg md:text-xl font-bold text-hit-primary">{Math.round(progress)}%</div>
+              <div className="text-xs text-hit-secondary">הושלם</div>
+            </div>
+          </div>
+
+          {/* Mini step indicators */}
+          <div className="flex justify-center space-x-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-6 md:w-8 rounded-full transition-all duration-300 ${index < currentStep
+                  ? 'bg-hit-primary shadow-sm'
+                  : index === currentStep
+                    ? 'bg-hit-secondary animate-pulse'
+                    : 'bg-gray-200'
+                  }`}
+              />
+            ))}
+          </div>
+
+          {/* Motivational message based on progress */}
+          <div className="mt-4 text-center">
+            {progress < 40 && (
+              <p className="text-sm text-hit-secondary">
+                💡 כל תשובה עוזרת לנו להכין המלצות מותאמות אישית עבורכם
+              </p>
+            )}
+            {progress >= 40 && progress < 80 && (
+              <p className="text-sm text-hit-secondary">
+                🎯 אתם באמצע הדרך! ההמלצות שלנו נהיות יותר ויותר מדויקות
+              </p>
+            )}
+            {progress >= 80 && currentStep < steps.length - 1 && (
+              <p className="text-sm text-hit-secondary">
+                🚀 כמעט סיימתם! עוד שלב אחד ותקבלו הכוונה אקדמית מותאמת אישית
+              </p>
+            )}
+            {currentStep === steps.length - 1 && (
+              <p className="text-sm text-hit-secondary">
+                ✨ מושלם! לחצו על "סיום השאלון" כדי לשמור את ההעדפות שלכם
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

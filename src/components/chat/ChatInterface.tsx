@@ -67,35 +67,82 @@ const ChatInterface = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Debug Info Panel - Hide on mobile in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-gray-100 border-b p-2 hidden lg:block">
-          <button
-            onClick={() => setShowDebugInfo(!showDebugInfo)}
-            className="flex items-center space-x-2 text-xs text-gray-600 hover:text-gray-800"
-          >
-            <Info className="h-3 w-3" />
-            <span>Debug Info ({conversationHistory.length} messages)</span>
-          </button>
-
-          {showDebugInfo && lastResponseMetadata && (
-            <div className="mt-2 text-xs bg-white p-2 rounded border">
-              <div><strong>Model:</strong> {lastResponseMetadata.modelUsed}</div>
-              <div><strong>Response Time:</strong> {lastResponseMetadata.responseTime}ms</div>
-              <div><strong>Datasets Used:</strong> {Object.entries(lastResponseMetadata.datasetsIncluded)
-                .filter(([_, used]) => used)
-                .map(([dataset]) => dataset)
-                .join(', ') || 'None'}</div>
-              <div><strong>Knowledge Base:</strong> {lastResponseMetadata.knowledgeBaseUsed ? 'Yes' : 'No'}</div>
-              <div><strong>Job Search:</strong> {lastResponseMetadata.jobSearchUsed ? 'Yes' : 'No'}</div>
-              {lastJobData && (
-                <div><strong>Jobs Found:</strong> {lastJobData.totalJobsFound || 0}</div>
-              )}
-              <div><strong>Conversation History:</strong> {conversationHistory.length} messages</div>
+      {/* Beautiful Chat Status Header */}
+      <div className="bg-gradient-to-r from-hit-light via-white to-hit-light border-b border-hit-primary/10 p-4">
+        <div className="flex items-center justify-between">
+          {/* Left side - AI Status */}
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="h-10 w-10 bg-hit-primary rounded-full flex items-center justify-center shadow-md">
+                <img src="/logo-white.png" className="h-7 w-7" alt="MentorHIT" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
             </div>
-          )}
+            <div>
+              <h3 className="font-semibold text-hit-dark text-sm">MentorHIT מחובר</h3>
+              <p className="text-xs text-hit-secondary">היועץ האקדמי הדיגיטלי שלך</p>
+            </div>
+          </div>
+
+          {/* Center - Conversation Stats */}
+          <div className="hidden md:flex items-center space-x-6">
+            <div className="text-center">
+              <div className="text-sm font-semibold text-hit-primary">{conversationHistory.length}</div>
+              <div className="text-xs text-hit-secondary">הודעות</div>
+            </div>
+            {lastResponseMetadata && (
+              <div className="text-center">
+                <div className="text-sm font-semibold text-hit-primary">
+                  {lastResponseMetadata.responseTime < 1000 ? 'מהיר' : 'רגיל'}
+                </div>
+                <div className="text-xs text-hit-secondary">זמן תגובה</div>
+              </div>
+            )}
+            {lastJobData && (
+              <div className="text-center">
+                <div className="text-sm font-semibold text-hit-primary">{lastJobData.totalJobsFound || 0}</div>
+                <div className="text-xs text-hit-secondary">משרות נמצאו</div>
+              </div>
+            )}
+          </div>
+
+          {/* Right side - Quick Actions */}
+          <div className="flex items-center space-x-2">
+            {lastResponseMetadata?.knowledgeBaseUsed && (
+              <div className="flex items-center space-x-1 bg-hit-light px-2 py-1 rounded-full">
+                <div className="h-2 w-2 bg-hit-primary rounded-full"></div>
+                <span className="text-xs text-hit-primary font-medium">מסד ידע</span>
+              </div>
+            )}
+            {lastResponseMetadata?.jobSearchUsed && (
+              <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
+                <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
+                <span className="text-xs text-blue-700 font-medium">חיפוש משרות</span>
+              </div>
+            )}
+            <div className="flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-full">
+              <div className="h-2 w-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-700 font-medium">פעיל</span>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Progress indicator for active conversation */}
+        {conversationHistory.length > 0 && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between text-xs text-hit-secondary mb-1">
+              <span>התקדמות השיחה</span>
+              <span>{Math.min(100, (conversationHistory.length / 10) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-1">
+              <div
+                className="bg-gradient-to-r from-hit-primary to-hit-secondary h-1 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, (conversationHistory.length / 10) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Chat Messages Area - Mobile optimized */}
       <div className="flex-1 overflow-hidden">
