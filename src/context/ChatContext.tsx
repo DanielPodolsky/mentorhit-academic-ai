@@ -59,7 +59,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Call real AWS API with conversation history
       const response = await chatAPI.sendMessage({
         message: text,
-        userId: user?.id || 'anonymous',
+        userId: user?.email.includes('noy') ? 'noy-student' : 'daniel-student',
         history: conversationHistory
       });
 
